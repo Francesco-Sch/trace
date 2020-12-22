@@ -16,10 +16,11 @@ export function p5Sketch(sketch) {
 
         // Div to load in the canvas
         canvas.parent('p5canvas');
+
+        s.weatherVisualization();
     }
 
     s.draw = () => {
-        s.weatherVisualization();
     }
     
     let http = "https://";
@@ -59,28 +60,31 @@ export function p5Sketch(sketch) {
         
         fetch(http + url + querys + "&appid=" + apiKey)
         .then(response => response.json())
-        .then(data => console.log(data));
+        .then(data => weather = data)
+        .then(() => {
+                s.displayDayOrNight();
+            }
+        )
     }
 
     s.displayDayOrNight = () => {
         console.log(weather);
         // Get unix seconds of sunrise and sunset
-        let sunriseUnix = weather.sys;
-        let sunsetUnix = weather.sys;
+        let sunriseUnix = weather.sys.sunrise;
+        let sunsetUnix = weather.sys.sunset;
 
         console.log(sunriseUnix, sunsetUnix);
 
         // Convert unix seconds to normal hour and minute format
-        let sunriseDate = new Date(sunriseUnix);
-        let sunsetDate = new Date(sunsetUnix);
-        let stringFormattedSunrise = moment(sunriseDate).format();
-        let stringFormattedSunset = moment(sunsetDate).format();
+        let sunriseDate = new Date(sunriseUnix*1000);
+        let sunsetDate = new Date(sunsetUnix*1000);
+        let formattedSunrise = moment(sunriseDate).format('hh:mm:ss a');
+        let formattedSunset = moment(sunsetDate).format('hh:mm:ss a');
 
-        console.log("Sunrise: " + stringFormattedSunrise + "; Sunset: " + stringFormattedSunset);
-        
+        console.log("Sunrise: " + formattedSunrise + "; Sunset: " + formattedSunset);
         // Convert strings to let for comparison
-        let formattedSunrise = stringFormattedSunrise.replace(":", "");
-        let formattedSunset = stringFormattedSunset.replace(":", "");
+        //let formattedSunrise = stringFormattedSunrise.replace(":", "");
+        //let formattedSunset = stringFormattedSunset.replace(":", "");
         
         // Check if currentHour, currentMinute or currentSecond misses a leading zero
 /*         if(str(currentHour).length() == 1) {
@@ -267,8 +271,8 @@ export function p5Sketch(sketch) {
     // Function for drawing weather visualization
     s.weatherVisualization = () => {
         s.retrieveWeatherData();
-        s.displayDayOrNight(); 
-        s.weatherColor();
-        s.drawWeatherShape();
+        //s.displayDayOrNight(); 
+        //s.weatherColor();
+        //s.drawWeatherShape();
     }
 }
