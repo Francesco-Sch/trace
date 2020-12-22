@@ -1,0 +1,7 @@
+{
+  "name": "trace",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
