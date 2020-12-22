@@ -6,7 +6,10 @@ export function p5Sketch(sketch) {
     let abstand = 10;
     
     sketch.setup = () => {
-        let canvas = sketch.createCanvas(2000, 2000);
+        let canvasDiv = document.getElementById('p5canvas');
+        let canvasWidth = canvasDiv.offsetWidth;
+        let canvasHeight = canvasDiv.offsetHeight;
+        let canvas = sketch.createCanvas(canvasWidth, canvasHeight);
         canvas.parent('p5canvas');
     }
 
