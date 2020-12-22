@@ -1,4 +1,5 @@
 import { weatherApiKey } from './credentials.js'
+import moment from 'moment';
 
 export function p5Sketch(sketch) {
     let s = sketch;
@@ -20,35 +21,33 @@ export function p5Sketch(sketch) {
     s.draw = () => {
         s.weatherVisualization();
     }
-
-
     
     let http = "https://";
     let url = "api.openweathermap.org/data/2.5/weather";
     let units = "imperial";
     let apiKey = weatherApiKey;
-    //let weather = s.retrieveWeatherData();
+    let weather = {};
 
     // Position
     let latitude = 50.773;
     let longitude = 8.748;
  
     // Current time
-/*     let currentTime;
-    let currentHour = hour();
-    let currentMinute = minute();
-    let currentSecond = second();
+    //let currentTime;
+    //let currentHour = s.hour();
+   // let currentMinute = s.minute();
+    //let currentSecond = s.second();
     let sCurrentHour, sCurrentMinute, sCurrentSecond;
 
     // Day or Night
-    let itIsNight;
+    //let itIsNight = false;
 
     // Current degrees & weather color
-    let degress = 0;
-    let minTemperature = 120;
-    let maxTemperature = 240;
-    let temperature;
-    let temperatureHue; */
+    //let degress = 0;
+    //let minTemperature = 120;
+    //let maxTemperature = 240;
+    //let temperature;
+    //let temperatureHue; 
 
     // Load weather graphics
     // PShape sun;
@@ -58,26 +57,33 @@ export function p5Sketch(sketch) {
     s.retrieveWeatherData = () => {  
         let querys = "?lat=" + latitude + "&lon=" + longitude + "&units=" + units;
         
-        return s.loadJSON(http + url + querys + "&appid=" + apiKey);
+        fetch(http + url + querys + "&appid=" + apiKey)
+        .then(response => response.json())
+        .then(data => console.log(data));
     }
 
-    /* s.displayDayOrNight = () => {
+    s.displayDayOrNight = () => {
+        console.log(weather);
         // Get unix seconds of sunrise and sunset
-        let sunriseUnix = weather.getJSONObject("sys").getLong("sunrise");
-        let sunsetUnix = weather.getJSONObject("sys").getLong("sunset");
+        let sunriseUnix = weather.sys;
+        let sunsetUnix = weather.sys;
+
+        console.log(sunriseUnix, sunsetUnix);
 
         // Convert unix seconds to normal hour and minute format
-        Date sunriseDate = new Date(sunriseUnix*1000);
-        Date sunsetDate = new Date(sunsetUnix*1000);
-        let stringFormattedSunrise = DateFormat.getTimeInstance().format(sunriseDate);
-        let stringFormattedSunset = DateFormat.getTimeInstance().format(sunsetDate);
+        let sunriseDate = new Date(sunriseUnix);
+        let sunsetDate = new Date(sunsetUnix);
+        let stringFormattedSunrise = moment(sunriseDate).format();
+        let stringFormattedSunset = moment(sunsetDate).format();
+
+        console.log("Sunrise: " + stringFormattedSunrise + "; Sunset: " + stringFormattedSunset);
         
         // Convert strings to let for comparison
-        let formattedSunrise = let(stringFormattedSunrise.replace(":", ""));
-        let formattedSunset = let(stringFormattedSunset.replace(":", ""));
+        let formattedSunrise = stringFormattedSunrise.replace(":", "");
+        let formattedSunset = stringFormattedSunset.replace(":", "");
         
         // Check if currentHour, currentMinute or currentSecond misses a leading zero
-        if(str(currentHour).length() == 1) {
+/*         if(str(currentHour).length() == 1) {
             sCurrentHour = nf(currentHour, 2);
         } else {
             sCurrentHour = str(currentHour);
@@ -91,33 +97,33 @@ export function p5Sketch(sketch) {
             sCurrentSecond = nf(currentSecond, 2);
         } else {
             sCurrentSecond = str(currentSecond);
-        }
+        } */
         
         // Get current time and convert string to let for comparison
         let stringCurrentTime = sCurrentHour + "" + sCurrentMinute + "" + sCurrentSecond;
-        let currentTime = let(stringCurrentTime);
+        let currentTime = stringCurrentTime;
         
-        prletln("CurrentTime: " + currentTime + " ; Sunrise: " + formattedSunrise + " ; Sunset: " + formattedSunset);
+        console.log("CurrentTime: " + currentTime + " ; Sunrise: " + formattedSunrise + " ; Sunset: " + formattedSunset);
         
         // Display if it is day or night
         if(currentTime < formattedSunrise || currentTime > formattedSunset) {
             // Sets background to night
-            background(0,0,0); // black
+            s.background(0,0,0); // black
             
             // Currently it is night
-            itIsNight = true;
-            prletln("It is night");
+            //itIsNight = true;
+            console.log("It is night");
         } else {
             // Sets background to day
-            background(0,0,100); // white
+            s.background(0,0,100); // white
             
             // Currently it is day
-            itIsNight = false;
-            prletln("It is day");
+            //itIsNight = false;
+            console.log("It is day");
         }
     }
 
-    s.weatherColor = () => {
+ /*    s.weatherColor = () => {
         // Get current temperature
         temperature = weather.getJSONObject("main").getFloat("temp");
         
