@@ -1,6 +1,7 @@
 import { weatherApiKey } from './credentials.js'
 import moment from 'moment';
 
+// Weather API
 let http = "https://";
 let url = "api.openweathermap.org/data/2.5/weather";
 let units = "imperial";
@@ -15,7 +16,7 @@ let longitude = 8.748;
 let currentTime = new Date();
 
 // Day or Night
-let itIsNight;
+let itIsNight = true;
 
 // Current degrees & weather color
 //let degress = 0;
@@ -59,6 +60,7 @@ export function p5Sketch(sketch) {
         .then(data => weather = data)
         .then(() => {
                 s.displayDayOrNight(itIsNight);
+                s.weatherColor();
             }
         )
     }
@@ -96,7 +98,7 @@ export function p5Sketch(sketch) {
 
     s.weatherColor = () => {
         // Get current temperature
-        temperature = weather.getJSONObject("main").getFloat("temp");
+        temperature = weather.main.temp;
         
         // Check if temperature is above maximum temperature
         // Sets hue for shape color
@@ -238,8 +240,6 @@ export function p5Sketch(sketch) {
     // Function for drawing weather visualization
     s.weatherVisualization = () => {
         s.retrieveWeatherData();
-        //s.displayDayOrNight(); 
-        //s.weatherColor();
         //s.drawWeatherShape();
     }
 }
