@@ -61,6 +61,7 @@ export function p5Sketch(sketch) {
         .then(() => {
                 s.displayDayOrNight(itIsNight);
                 s.weatherColor();
+                s.drawSun(750);
             }
         )
     }
@@ -112,34 +113,30 @@ export function p5Sketch(sketch) {
         console.log(temperatureHue);
     }
 
-/*     // Function for drawing sun shape
-    s.drawSun = (amount) => {  
-        // Load sun shape
-        sun = loadShape("sun.svg");
-        sun.disableStyle();
-        noStroke();
-        
+    // Function for drawing sun shape
+    s.drawSun = (amount) => {
+
         // Checks if it is night or day 
         if(itIsNight == true) {
             // Draws gradient from shape for night
             for(let i=amount; i>0; i-=10) {
-            let c = map(i,amount,0,0,100);
+                let c = s.map(i,amount,0,0,100);
             
-            fill(temperatureHue, 100, c);
-            shape(sun, width/2, height/2, i, i);
+                s.fill(temperatureHue, 100, c);
+                s.ellipse(s.displayWidth/2, s.displayHeight/2, i, i*1.5);
             }
         } else {
             // Draws gradient from shape for day
             for(let i=amount; i>0; i-=10) {
-            let c = map(i,amount,0,0,100);
+                let c = s.map(i,amount,0,0,100);
             
-            fill(temperatureHue, c, 100);
-            shape(sun, width/2, height/2, i, i);
+                s.fill(temperatureHue, c, 100);
+                s.ellipse(s.displayWidth/2, s.displayHeight/2, i, i*1.5);
             }
         }
     }
 
-    // Function for rendering rain shape
+/*     // Function for rendering rain shape
     s.drawRainShape = (xPos, yPos, amount) => {
     // Load rain shape
     rain = loadShape("rain.svg");
