@@ -33,4 +33,7 @@ ion-toolbar {
     --background: transparent;
     --ion-color-base: transparent !important;
 }
+ion-content {
+    position: static;
+}
 </style>
