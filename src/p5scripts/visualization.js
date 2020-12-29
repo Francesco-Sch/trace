@@ -56,7 +56,7 @@ export function p5Sketch(sketch) {
         .then(() => {
                 s.displayDayOrNight(itIsNight);
                 s.weatherColor();
-                s.drawSun(500);
+                s.drawClouds();
             }
         )
     }
@@ -167,29 +167,25 @@ export function p5Sketch(sketch) {
         }
     }
 
-/*     // Function for drawing cloudy shapes
+    // Function for drawing cloudy shapes
     s.drawCloudShape = (xPos, yPos, amount) => {
-        // Load cloud shape
-        cloud = loadShape("cloud.svg");
-        cloud.disableStyle();
-        noStroke();
         
         // Checks if it is night or day 
         if(itIsNight == true) {
             // Draws gradient from shape for night
-            for(let i=amount; i>0; i-=10) {
-            let c = map(i,amount,0,0,100);
-            
-            fill(temperatureHue, 100, c);
-            shape(cloud, xPos, yPos, i, i);
+            for(let i=amount; i>0; i-=2) {
+                let c = s.map(i,amount,0,0,100);
+                
+                s.fill(temperatureHue, 100, c);
+                s.ellipse(xPos, yPos, i*3, i);
             }
         } else {
             // Draws gradient from shape for day
-            for(let i=amount; i>0; i-=10) {
-            let c = map(i,amount,0,0,100);
-            
-            fill(temperatureHue, c, 100);
-            shape(cloud, xPos, yPos, i, i);
+            for(let i=amount; i>0; i-=2) {
+                let c = s.map(i,amount,0,0,100);
+                
+                s.fill(temperatureHue, c, 100);
+                s.ellipse(xPos, yPos, i*3, i);
             }
         }
     }
@@ -197,13 +193,13 @@ export function p5Sketch(sketch) {
     // Function for drawing two cloud shapes
     s.drawClouds = () => {
         // Position of cloud shapes
-        let xPos = {0, (width)};
-        let yPos = {(displayHeight/5), ((height/5)*4)};
+        let xPos = [0, s.displayWidth];
+        let yPos = [((s.displayHeight/4)), ((s.displayHeight/4)*3)];
         
         for(let i=0; i<2; i++) {
-            s.drawCloudShape(xPos[i], yPos[i], 3800);
+            s.drawCloudShape(xPos[i], yPos[i], 375);
         }
-    } */
+    }
 
     s.drawWeatherShape = () => {
         let currentWeatherCondition = weather.getJSONArray("weather").getJSONObject(0).getlet("main");
