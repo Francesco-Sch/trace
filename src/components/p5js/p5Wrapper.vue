@@ -7,8 +7,16 @@ import P5 from 'p5';
 import { p5Sketch } from '../../p5scripts/visualization.js';
 
 export default {
+    data() {
+        return {
+            workouts: null,
+        }
+    },
     mounted() {
         new P5(p5Sketch);
+        this.workouts = this.$store.getters.getWorkouts;
+
+        console.log(this.workouts);
     }
 }
 </script>
