@@ -5,18 +5,34 @@
 <script>
 import P5 from 'p5';
 import { p5Sketch } from '../../p5scripts/visualization.js';
+import { Health } from '@ionic-native/health';
+
 
 export default {
     data() {
-        return {
-            workouts: null,
+    },
+    methods: {
+        healthAuthentication: () => {
+            Health.isAvailable()
+            .then((available) => {
+                console.log(available);
+
+                Health.requestAuthorization([
+                    'distance', 'nutrition',  //read and write permissions
+                    {
+                        read: ['steps'],       //read only permission
+                        write: ['height', 'weight']  //write only permission
+                    }
+                ])
+                .then(res => console.log(res))
+                .catch(e => console.log('error reqAuth: ' + e));
+            })
+            .catch(err => console.log('error auth: ' + err));
         }
     },
     mounted() {
         new P5(p5Sketch);
-        this.workouts = this.$store.getters.getWorkouts;
-
-        console.log(this.workouts);
+        this.healthAuthentication();
     }
 }
 </script>
