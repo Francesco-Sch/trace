@@ -56,7 +56,7 @@ export function p5Sketch(sketch) {
         .then(() => {
                 s.displayDayOrNight(itIsNight);
                 s.weatherColor();
-                s.drawClouds();
+                s.drawWeatherShape();
             }
         )
     }
@@ -202,27 +202,24 @@ export function p5Sketch(sketch) {
     }
 
     s.drawWeatherShape = () => {
-        let currentWeatherCondition = weather.getJSONArray("weather").getJSONObject(0).getlet("main");
-        let cloudWeather = "Clouds";
-        let rainWeather = "Rain";
+        let currentWeatherCondition = weather.weather[0].main;
         console.log(currentWeatherCondition);
 
         // Checks present weather condition
-        if(currentWeatherCondition.equals(cloudWeather) == true) {
+        if(currentWeatherCondition == "Clouds") {
             // Draws gradient shapes for clouds
             s.drawClouds();
-        } else if(currentWeatherCondition.equals(rainWeather) == true) {
+        } else if(currentWeatherCondition == "Rain") {
             // Draws gradient shapes for rain
             s.drawRain(5);
         } else {
             // Draws gradient shapes for sun (or other weather conditions)
-            s.drawSun(2000);
+            s.drawSun(750);
         }
     }
 
     // Function for drawing weather visualization
     s.weatherVisualization = () => {
         s.retrieveWeatherData();
-        //s.drawWeatherShape();
     }
 }
