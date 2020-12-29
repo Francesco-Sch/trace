@@ -23,12 +23,7 @@ let itIsNight = true;
 let minTemperature = 120;
 let maxTemperature = 240;
 let temperature;
-let temperatureHue; 
-
-// Load weather graphics
-// PShape sun;
-// PShape rain;
-// PShape cloud;
+let temperatureHue;
 
 export function p5Sketch(sketch) {
     let s = sketch;
@@ -61,7 +56,7 @@ export function p5Sketch(sketch) {
         .then(() => {
                 s.displayDayOrNight(itIsNight);
                 s.weatherColor();
-                s.drawSun(750);
+                s.drawSun(500);
             }
         )
     }
@@ -119,7 +114,7 @@ export function p5Sketch(sketch) {
         // Checks if it is night or day 
         if(itIsNight == true) {
             // Draws gradient from shape for night
-            for(let i=amount; i>0; i-=10) {
+            for(let i=amount; i>0; i-=2) {
                 let c = s.map(i,amount,0,0,100);
             
                 s.fill(temperatureHue, 100, c);
@@ -127,7 +122,7 @@ export function p5Sketch(sketch) {
             }
         } else {
             // Draws gradient from shape for day
-            for(let i=amount; i>0; i-=10) {
+            for(let i=amount; i>0; i-=2) {
                 let c = s.map(i,amount,0,0,100);
             
                 s.fill(temperatureHue, c, 100);
@@ -136,48 +131,43 @@ export function p5Sketch(sketch) {
         }
     }
 
-/*     // Function for rendering rain shape
+    // Function for rendering rain shape
     s.drawRainShape = (xPos, yPos, amount) => {
-    // Load rain shape
-    rain = loadShape("rain.svg");
-    rain.disableStyle();
-    noStroke();
-    
-    // Checks if it is night or day 
-    if(itIsNight == true) {
-        // Draws gradient from shape for night
-        for(let i=amount; i>0; i-=10) {
-        let c = map(i,amount,0,0,100);
-        
-        fill(temperatureHue, 100, c);
-        shape(rain, xPos, yPos, i, i);
+        // Checks if it is night or day 
+        if(itIsNight == true) {
+            // Draws gradient from shape for night
+            for(let i=amount; i>0; i-=2) {
+                let c = s.map(i,amount,0,0,100);
+                
+                s.fill(temperatureHue, 100, c);
+                s.ellipse(xPos, yPos, i, i*1.5);
+            }
+        } else {
+            // Draws gradient from shape for day
+            for(let i=amount; i>0; i-=2) {
+                let c = s.map(i,amount,0,0,100);
+                
+                s.fill(temperatureHue, c, 100);
+                s.ellipse(xPos, yPos, i, i*1.5);
+            }
         }
-    } else {
-        // Draws gradient from shape for day
-        for(let i=amount; i>0; i-=10) {
-        let c = map(i,amount,0,0,100);
-        
-        fill(temperatureHue, c, 100);
-        shape(rain, xPos, yPos, i, i);
-        }
-    }
     }
 
     // Function for drawing multiple rain shapes
     // and distributing them
     s.drawRain = (amount) => {
-    let xPos = new Array(amount);
-    let yPos = new Array(amount);
-    
-    for(let i=0; i<amount; i++) {
-        xPos[i] = random(width);
-        yPos[i] = random(height);
+        let xPos = new Array(amount);
+        let yPos = new Array(amount);
         
-        s.drawRainShape(xPos[i], yPos[i], 750);
-    }
+        for(let i=0; i<amount; i++) {
+            xPos[i] = s.random(s.displayWidth);
+            yPos[i] = s.random(s.displayHeight);
+            
+            s.drawRainShape(xPos[i], yPos[i], 125);
+        }
     }
 
-    // Function for drawing cloudy shapes
+/*     // Function for drawing cloudy shapes
     s.drawCloudShape = (xPos, yPos, amount) => {
         // Load cloud shape
         cloud = loadShape("cloud.svg");
@@ -213,13 +203,13 @@ export function p5Sketch(sketch) {
         for(let i=0; i<2; i++) {
             s.drawCloudShape(xPos[i], yPos[i], 3800);
         }
-    }
+    } */
 
     s.drawWeatherShape = () => {
         let currentWeatherCondition = weather.getJSONArray("weather").getJSONObject(0).getlet("main");
         let cloudWeather = "Clouds";
         let rainWeather = "Rain";
-        prletln(currentWeatherCondition);
+        console.log(currentWeatherCondition);
 
         // Checks present weather condition
         if(currentWeatherCondition.equals(cloudWeather) == true) {
@@ -232,7 +222,7 @@ export function p5Sketch(sketch) {
             // Draws gradient shapes for sun (or other weather conditions)
             s.drawSun(2000);
         }
-    } */
+    }
 
     // Function for drawing weather visualization
     s.weatherVisualization = () => {
