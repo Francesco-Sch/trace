@@ -3,7 +3,7 @@
         <template v-slot:content>
             <div class ="login-wrapper">
                 <img src="../../public/assets/logo/trace-logo_text_black.svg" alt="Trace logo in black" class="trace-logo">
-                <ion-button expand="block" color="dark">Login</ion-button>
+                <ion-button expand="block" color="dark" @click="requestAuthentication">Login</ion-button>
             </div>
         </template>
     </base-layout>
@@ -17,6 +17,11 @@ export default {
     components: {
         BaseLayout,
         IonButton
+    },
+    methods: {
+        requestAuthentication() {
+            this.$store.dispatch('healthAuthentication')
+        }
     }
 }
 </script>
