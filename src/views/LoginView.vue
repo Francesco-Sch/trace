@@ -3,7 +3,20 @@
         <template v-slot:content>
             <div class ="login-wrapper">
                 <img src="../../public/assets/logo/trace-logo_text_black.svg" alt="Trace logo in black" class="trace-logo">
-                <ion-button expand="block" color="dark" @click="requestAuthentication">Login</ion-button>
+                
+                <ion-button 
+                    v-if="isLoggedIn" 
+                    expand="block" 
+                    color="dark" 
+                    @click="$router.push('visualization')"
+                >Enter app</ion-button>
+
+                <ion-button 
+                    v-else 
+                    expand="block" 
+                    color="dark" 
+                    @click="requestAuthentication"
+                >Login</ion-button>
             </div>
         </template>
     </base-layout>
@@ -18,9 +31,18 @@ export default {
         BaseLayout,
         IonButton
     },
+    data() {
+        return {
+            isLoggedIn: false
+        }
+    },
     methods: {
         requestAuthentication() {
             this.$store.dispatch('healthAuthentication')
+            .then(
+                console.log(this.$store.getters.isLoggedIn),
+                this.isLoggedIn = this.$store.getters.isLoggedIn
+            )   
         }
     }
 }

@@ -1,11 +1,22 @@
 import { createStore } from 'vuex'
 import { Health } from '@ionic-native/health';
 
+const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 
 const store = createStore({
     state: () => ({
-        
+        isLoggedIn: false
     }),
+    getters: {
+        isLoggedIn: state => {
+            return state.isLoggedIn
+        }
+    },
+    mutations: {
+        [LOGIN_SUCCESS](state) {
+            state.isLoggedIn = true;
+        },
+    },
     actions: {
         healthAuthentication() {
             Health.isAvailable()
@@ -13,14 +24,16 @@ const store = createStore({
                 console.log(available);
 
                 Health.requestAuthorization([
-                    'distance', 'nutrition',  //read and write permissions
                     {
-                        read: ['steps'],       //read only permission
+                        read: ['steps'],   //read only permission
                         write: ['height', 'weight']  //write only permission
                     }
                 ])
-                .then(res => console.log(res))
-                .catch(e => console.log('error reqAuth: ' + e));
+                .then(res => {
+                    console.log(res);
+                    store.commit(LOGIN_SUCCESS); // sets Login status to logged in
+                })
+                .catch(err => console.log('error reqAuth: ' + err));
             })
             .catch(err => console.log('error auth: ' + err));
         }

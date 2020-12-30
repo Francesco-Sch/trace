@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
+import Store from '../store';
 
 const routes = [
   {
@@ -7,11 +8,27 @@ const routes = [
   },
   {
     path: '/login',
-    component: () => import('../views/LoginView.vue')
+    name: 'login',
+    component: () => import('../views/LoginView.vue'),
+    /* beforeEnter: (to, from, next) => {
+      if(this.$store.getters.isLoggedIn) {
+        next({ name: 'visualization' })
+      } else {
+        next()
+      }
+    } */
   },
   {
     path: '/visualization',
-    component: () => import('../views/VisualizationView.vue')
+    name: 'visualization',
+    component: () => import('../views/VisualizationView.vue'),
+    beforeEnter: (to, from, next) => {
+      if(Store.state.isLoggedIn) {
+        next()
+      } else {
+        next({ name: 'login' })
+      }
+    }
   }
 ]
 
