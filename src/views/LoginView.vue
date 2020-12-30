@@ -8,7 +8,7 @@
                     v-if="isLoggedIn" 
                     expand="block" 
                     color="dark" 
-                    @click="$router.push('visualization')"
+                    @click="$router.push('workouts')"
                 >Enter app</ion-button>
 
                 <ion-button 
@@ -40,7 +40,6 @@ export default {
         requestAuthentication() {
             this.$store.dispatch('healthAuthentication')
             .then(
-                console.log(this.$store.getters.isLoggedIn),
                 this.isLoggedIn = this.$store.getters.isLoggedIn
             )   
         }

@@ -25,8 +25,8 @@ const store = createStore({
 
                 Health.requestAuthorization([
                     {
-                        read: ['steps'],   //read only permission
-                        write: ['height', 'weight']  //write only permission
+                        read: ['steps', 'activity'],   //read only permission
+                        write: []  //write only permission
                     }
                 ])
                 .then(res => {
@@ -36,6 +36,16 @@ const store = createStore({
                 .catch(err => console.log('error reqAuth: ' + err));
             })
             .catch(err => console.log('error auth: ' + err));
+        },
+        getActivites() {
+            Health.queryAggregated({
+                startDate: new Date(new Date().getTime() - 4 * 7 * 24 * 60 * 60 * 1000), // 4 weeks ago
+                endDate: new Date(), // now
+                dataType: 'activity',
+                bucket: 'day'
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log('err activites: ' + err))
         }
     }
 })

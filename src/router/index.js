@@ -10,18 +10,23 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginView.vue'),
-    /* beforeEnter: (to, from, next) => {
-      if(this.$store.getters.isLoggedIn) {
-        next({ name: 'visualization' })
-      } else {
-        next()
-      }
-    } */
   },
   {
     path: '/visualization',
     name: 'visualization',
     component: () => import('../views/VisualizationView.vue'),
+    beforeEnter: (to, from, next) => {
+      if(Store.state.isLoggedIn) {
+        next()
+      } else {
+        next({ name: 'login' })
+      }
+    }
+  },
+  {
+    path: '/workouts',
+    name: 'workouts',
+    component: () => import('../views/WorkoutListView.vue'),
     beforeEnter: (to, from, next) => {
       if(Store.state.isLoggedIn) {
         next()
