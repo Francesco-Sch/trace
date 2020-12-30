@@ -5,7 +5,8 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 
 const store = createStore({
     state: () => ({
-        isLoggedIn: false
+        isLoggedIn: false,
+        activites: []
     }),
     getters: {
         isLoggedIn: state => {
@@ -15,7 +16,7 @@ const store = createStore({
     mutations: {
         [LOGIN_SUCCESS](state) {
             state.isLoggedIn = true;
-        },
+        }
     },
     actions: {
         healthAuthentication() {
@@ -38,13 +39,16 @@ const store = createStore({
             .catch(err => console.log('error auth: ' + err));
         },
         getActivites() {
-            Health.queryAggregated({
-                startDate: new Date(new Date().getTime() - 4 * 7 * 24 * 60 * 60 * 1000), // 4 weeks ago
+            Health.query({
+                startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000), // one week ago
                 endDate: new Date(), // now
                 dataType: 'activity',
-                bucket: 'day'
+                limit: 1000
             })
-            .then(res => console.log(res))
+            .then(res => {
+                console.log(res)
+                this.state.activites = res;
+            })
             .catch(err => console.log('err activites: ' + err))
         }
     }
