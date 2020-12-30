@@ -1,5 +1,5 @@
 <template>
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" v-if="withHeader">
         <ion-toolbar>
             <ion-title>Navigation</ion-title>
         </ion-toolbar>
@@ -24,6 +24,12 @@ export default {
         IonToolbar,
         IonTitle,
         IonContent
+    },
+    props: {
+        withHeader: {
+            type: Boolean,
+            default: true
+        } 
     }
 }
 </script>
