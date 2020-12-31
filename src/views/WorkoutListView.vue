@@ -1,20 +1,32 @@
 <template>
-    <base-layout>
+    <base-layout :navigationTitle="'List of Workouts'">
         <template v-slot:content>
-            <h2>Workouts</h2>
+            <ion-list>
+                <workout-list-item></workout-list-item>
+            </ion-list>
         </template>
     </base-layout>
 </template>
 
 <script>
 import BaseLayout from '../layouts/BaseLayout.vue'
+import WorkoutListItem from '../components/workouts/WorkoutListItem.vue'
+import { IonList, } from '@ionic/vue';
 
 export default {
     components: {
-        BaseLayout
+        BaseLayout,
+        WorkoutListItem,
+        IonList
+    },
+    data() {
+        return {
+            activites: [],
+            jogging: []
+        }
     },
     mounted() {
-        console.log(this.$store.dispatch('getActivites'))
+        this.$store.dispatch('getActivites')
     }
 }
 </script>

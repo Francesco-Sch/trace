@@ -1,7 +1,7 @@
 <template>
     <ion-header class="ion-no-border" v-if="withHeader">
         <ion-toolbar>
-            <ion-title>Navigation</ion-title>
+            <ion-title>{{ navigationTitle }}</ion-title>
         </ion-toolbar>
     </ion-header>
 
@@ -29,7 +29,11 @@ export default {
         withHeader: {
             type: Boolean,
             default: true
-        } 
+        },
+        navigationTitle: {
+            type: String,
+            default: 'Navigation'
+        }
     }
 }
 </script>

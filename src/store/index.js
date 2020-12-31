@@ -6,7 +6,8 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const store = createStore({
     state: () => ({
         isLoggedIn: false,
-        activites: []
+        daysWithRunning: [],
+        runningActivites: []
     }),
     getters: {
         isLoggedIn: state => {
@@ -17,6 +18,8 @@ const store = createStore({
         [LOGIN_SUCCESS](state) {
             state.isLoggedIn = true;
         }
+
+        
     },
     actions: {
         healthAuthentication() {
@@ -38,18 +41,47 @@ const store = createStore({
             })
             .catch(err => console.log('error auth: ' + err));
         },
-        getActivites() {
-            Health.query({
-                startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000), // one week ago
+        getRunningActivites() {
+            Health.queryAggregated({
+                startDate: new Date(new Date().getTime() - 14 * 24 * 60 * 60 * 1000), // two week ago
                 endDate: new Date(), // now
                 dataType: 'activity',
-                limit: 1000
+                bucket: 'day'
             })
             .then(res => {
-                console.log(res)
-                this.state.activites = res;
+                // Filter for running activites
+                // and save them in state
+                this.daysWithRunning = res.filter(function(el) {
+                    if(typeof el.value["running.jogging"] !== 'undefined' || typeof el.value.running !== 'undefined') {
+                        return el
+                    }
+                })
+                console.log(this.daysWithRunning)
             })
             .catch(err => console.log('err activites: ' + err))
+            .then(() => {
+                let runningActivites = [];
+
+                for(let i = 0; i < this.daysWithRunning.length; i++) {
+                    Health.query({
+                        startDate: this.daysWithRunning[i].startDate,
+                        endDate: this.daysWithRunning[i].endDate,
+                        dataType: 'activity',
+                        limit: 500
+                    })
+                    .then(res =>{
+                        let runningActivity = res.filter(function(el) {
+                            if(el.value == 'running.jogging' || el.value == 'running') {
+                                return el
+                            }
+                        })
+                        runningActivites.push.apply(runningActivites ,runningActivity)
+                    })
+                    .catch(err => console.log('err runningActivites: ' + err))
+                }
+                
+                this.runningActivites = runningActivites
+            })
         }
     }
 })
