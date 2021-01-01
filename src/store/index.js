@@ -1,28 +1,57 @@
 import { createStore } from 'vuex'
 import { Health } from '@ionic-native/health';
 
+// Login objects
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+
+// Fitness data objects
+const SET_RUNNING_DAYS = 'SET_RUNNING_DAYS';
+const SET_RUNNING_SESSIONS = 'SET_RUNNING_SESSIONS';
 
 const store = createStore({
     state: () => ({
         isLoggedIn: false,
-        daysWithRunning: [],
-        runningActivites: []
+        runningDays: [],
+        runningSessions: []
     }),
     getters: {
         isLoggedIn: state => {
             return state.isLoggedIn
+        },
+        runningDays: state => {
+            return state.runningDays
+        },
+        runningSessions: state => {
+            return state.runningSessions
         }
     },
     mutations: {
+        // Login mutations
         [LOGIN_SUCCESS](state) {
             state.isLoggedIn = true;
-        }
+        },
 
-        
+        // Fitness data mutations
+        [SET_RUNNING_DAYS](state, activityDays) {
+            const filteredRunningDays = activityDays.filter(
+                activityDay => activityDay.value['running.jogging'] !== undefined ||
+                activityDay.value.running !== undefined
+            );
+            
+            state.runningDays = filteredRunningDays;
+        },
+        [SET_RUNNING_SESSIONS](state, sessions) {
+            const filteredRunningSessions = sessions.filter(
+                sessions => sessions.value == 'running.jogging' ||
+                sessions.value == 'running'
+            );
+            
+            console.log(filteredRunningSessions);
+            state.runningSessions = filteredRunningSessions;
+        }
     },
     actions: {
-        healthAuthentication() {
+        healthAuthentication({ commit }) {
             Health.isAvailable()
             .then((available) => {
                 console.log(available);
@@ -35,53 +64,36 @@ const store = createStore({
                 ])
                 .then(res => {
                     console.log(res);
-                    store.commit(LOGIN_SUCCESS); // sets Login status to logged in
+                    commit(LOGIN_SUCCESS); // sets Login status to logged in
                 })
                 .catch(err => console.log('error reqAuth: ' + err));
             })
             .catch(err => console.log('error auth: ' + err));
         },
-        getRunningActivites() {
-            Health.queryAggregated({
+        async fetchRunningDays({ commit }) {
+            const response = await Health.queryAggregated({
                 startDate: new Date(new Date().getTime() - 14 * 24 * 60 * 60 * 1000), // two week ago
                 endDate: new Date(), // now
                 dataType: 'activity',
                 bucket: 'day'
-            })
-            .then(res => {
-                // Filter for running activites
-                // and save them in state
-                this.daysWithRunning = res.filter(function(el) {
-                    if(typeof el.value["running.jogging"] !== 'undefined' || typeof el.value.running !== 'undefined') {
-                        return el
-                    }
-                })
-                console.log(this.daysWithRunning)
-            })
-            .catch(err => console.log('err activites: ' + err))
-            .then(() => {
-                let runningActivites = [];
+            });
 
-                for(let i = 0; i < this.daysWithRunning.length; i++) {
-                    Health.query({
-                        startDate: this.daysWithRunning[i].startDate,
-                        endDate: this.daysWithRunning[i].endDate,
-                        dataType: 'activity',
-                        limit: 500
-                    })
-                    .then(res =>{
-                        let runningActivity = res.filter(function(el) {
-                            if(el.value == 'running.jogging' || el.value == 'running') {
-                                return el
-                            }
-                        })
-                        runningActivites.push.apply(runningActivites ,runningActivity)
-                    })
-                    .catch(err => console.log('err runningActivites: ' + err))
-                }
-                
-                this.runningActivites = runningActivites
-            })
+            commit(SET_RUNNING_DAYS, response);
+        },
+        async fetchRunningActivites({ commit, getters }) {
+            const sessionsOnRunningDays = [];
+
+            for(let i = 0; i < getters.runningDays.length; i++) {
+                const response = await Health.query({
+                    startDate: getters.runningDays[i].startDate,
+                    endDate: getters.runningDays[i].endDate,
+                    dataType: 'activity',
+                    limit: 500
+                })
+                sessionsOnRunningDays.push.apply(sessionsOnRunningDays, response);
+            }
+
+            commit(SET_RUNNING_SESSIONS, sessionsOnRunningDays);
         }
     }
 })
