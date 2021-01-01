@@ -1,11 +1,16 @@
 <template>
     <base-layout :navigationTitle="'List of Workouts'">
         <template v-slot:content>
+            <ion-list-header>
+                <ion-label>Your last Workouts</ion-label>
+            </ion-list-header>
+
             <ion-list>
                 <workout-list-item 
                 v-for="session in runningSessions"
                 :key="session.distance"
-                :itemTitle="session.value">
+                :itemTitle="'Running-Session'"
+                :itemDate="session.startDate">
                 </workout-list-item>
             </ion-list>
         </template>
@@ -16,13 +21,15 @@
 import { mapActions, mapGetters } from 'vuex'
 import BaseLayout from '../layouts/BaseLayout.vue'
 import WorkoutListItem from '../components/workouts/WorkoutListItem.vue'
-import { IonList, } from '@ionic/vue';
+import { IonList, IonListHeader, IonLabel } from '@ionic/vue';
 
 export default {
     components: {
         BaseLayout,
         WorkoutListItem,
-        IonList
+        IonList,
+        IonListHeader,
+        IonLabel
     },
     data() {
     },
@@ -40,4 +47,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+ion-list-header ion-label 
+    font-family: 'Red Hat Display', sans-serif
+    font-weight: 700
+    font-size: 2rem
 </style>
