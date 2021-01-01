@@ -1,10 +1,10 @@
 <template>
-    <ion-item>
+    <ion-item lines="none">
         <ion-thumbnail slot="start">
             <img src="../../../public/assets/gradients/workout_track.jpg">
         </ion-thumbnail>
 
-        <ion-label lines="none">
+        <ion-label>
             <h3>{{ itemTitle }}</h3>
             <p>{{ formattedDate }}</p>
         </ion-label>
