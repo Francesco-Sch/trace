@@ -2,7 +2,11 @@
     <base-layout :navigationTitle="'List of Workouts'">
         <template v-slot:content>
             <ion-list>
-                <!-- <workout-list-item></workout-list-item> -->
+                <workout-list-item 
+                v-for="session in runningSessions"
+                :key="session.distance"
+                :itemTitle="session.value">
+                </workout-list-item>
             </ion-list>
         </template>
     </base-layout>
@@ -11,26 +15,22 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import BaseLayout from '../layouts/BaseLayout.vue'
-//import WorkoutListItem from '../components/workouts/WorkoutListItem.vue'
+import WorkoutListItem from '../components/workouts/WorkoutListItem.vue'
 import { IonList, } from '@ionic/vue';
 
 export default {
     components: {
         BaseLayout,
-        //WorkoutListItem,
+        WorkoutListItem,
         IonList
     },
     data() {
-        return {
-            runningDays: [],
-            runningSessions: []
-        }
     },
     methods: {
         ...mapActions(['fetchRunningDays', 'fetchRunningActivites']),
     },
     computed: {
-        ...mapGetters([]),
+        ...mapGetters(['runningSessions']),
     },
     async created() {
         await this.fetchRunningDays();
