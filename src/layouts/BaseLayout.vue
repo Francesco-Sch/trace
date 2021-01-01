@@ -1,17 +1,20 @@
 <template>
-    <ion-header class="ion-no-border" v-if="withHeader">
-        <ion-toolbar>
-            <ion-title>{{ navigationTitle }}</ion-title>
-        </ion-toolbar>
-    </ion-header>
+    <ion-page>
+        <ion-header class="ion-no-border" v-if="withHeader">
+            <ion-toolbar>
+                <ion-title>{{ navigationTitle }}</ion-title>
+            </ion-toolbar>
+        </ion-header>
 
-    <ion-content fullscreen="true">
-        <slot name="content"></slot>
-    </ion-content>
+        <ion-content :class="{'static-position': contentUnderHeader}" fullscreen="true">
+            <slot name="content"></slot>
+        </ion-content>
+    </ion-page>
 </template>
 
 <script>
 import { 
+    IonPage,
     IonHeader, 
     IonToolbar, 
     IonTitle, 
@@ -20,6 +23,7 @@ import {
 
 export default {
     components: {
+        IonPage,
         IonHeader,
         IonToolbar,
         IonTitle,
@@ -27,6 +31,10 @@ export default {
     },
     props: {
         withHeader: {
+            type: Boolean,
+            default: true
+        },
+        contentUnderHeader: {
             type: Boolean,
             default: true
         },
@@ -43,7 +51,7 @@ ion-toolbar {
     --background: transparent;
     --ion-color-base: transparent !important;
 }
-ion-content {
+.static-position {
     position: static;
 }
 </style>

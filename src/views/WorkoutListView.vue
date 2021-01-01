@@ -1,5 +1,8 @@
 <template>
-    <base-layout :navigationTitle="'List of Workouts'">
+    <base-layout 
+    :withHeader="true" 
+    :navigationTitle="'Workouts'"
+    :contentUnderHeader="false">
         <template v-slot:content>
             <ion-list-header>
                 <ion-label>Your last Workouts</ion-label>

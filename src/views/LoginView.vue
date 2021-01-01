@@ -5,10 +5,10 @@
                 <img src="../../public/assets/logo/trace-logo_text_black.svg" alt="Trace logo in black" class="trace-logo">
                 
                 <ion-button 
-                    v-if="isLoggedIn" 
-                    expand="block" 
-                    color="dark" 
-                    @click="$router.push('workouts')"
+                v-if="isLoggedIn"
+                router-link="/workouts"
+                expand="block" 
+                color="dark" 
                 >Enter app</ion-button>
 
                 <ion-button 
