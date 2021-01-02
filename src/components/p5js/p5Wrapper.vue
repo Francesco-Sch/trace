@@ -51,20 +51,29 @@ export default {
             s.setup = () => {
                 // Display config
                 s.createCanvas(s.displayWidth, s.displayHeight);
-                s.frameRate(25);
+                s.frameRate(2);
 
                 // Color config
                 s.colorMode(s.HSB, 240, 100, 100, 100);
                 s.noStroke();
                 s.ellipseMode(s.CENTER);
 
-                s.weatherVisualization();
+                s.displayWeatherData();
+
             }
 
             s.draw = () => {
+                s.push();
+                s.fill(160,0,0);
+                s.ellipse(s.displayWidth/2,s.displayHeight/2,95,95);
+                /* s.filter(s.BLUR, 6);
+                s.stroke(0);
+                s.fill(160,100,0);
+                s.ellipse(s.displayWidth/2,s.displayHeight/2,90,90); */
+                s.pop();
             }
 
-            s.retrieveWeatherData = () => { 
+            s.displayWeatherData = () => { 
                 // Get Start and End Date for request
                 // and formats it
                 let id = this.$route.params.id;
@@ -81,7 +90,6 @@ export default {
                 .then(response => response.json())
                 .then(data => this.weather = data)
                 .then(() => {
-                        console.log(this.weather.locations['50.773,8.748'].values[0]);
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
@@ -241,10 +249,6 @@ export default {
                 }
             }
 
-            // Function for drawing weather visualization
-            s.weatherVisualization = () => {
-                s.retrieveWeatherData();
-            }
         }
 
         // Load sketch into div
