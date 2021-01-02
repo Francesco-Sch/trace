@@ -2,15 +2,15 @@ import { weatherApiKey } from './credentials.js'
 import moment from 'moment';
 
 // Weather API
-let http = "https://";
-let url = "api.openweathermap.org/data/2.5/weather";
-let units = "imperial";
+const http = "https://";
+const url = "history.openweathermap.org/data/2.5/history/city";
+const units = "imperial";
 let apiKey = weatherApiKey;
 let weather = {};
 
 // Position
-let latitude = 50.773;
-let longitude = 8.748;
+const latitude = 50.773;
+const longitude = 8.748;
 
 // Current time
 let currentTime = new Date();
@@ -41,7 +41,7 @@ export function p5Sketch(sketch) {
         // Div to load in the canvas
         canvas.parent('p5canvas');
 
-        s.weatherVisualization();
+        //s.weatherVisualization();
     }
 
     s.draw = () => {
