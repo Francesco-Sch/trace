@@ -13,7 +13,8 @@
                 v-for="session in runningSessions"
                 :key="session.distance"
                 :itemTitle="'Running-Session'"
-                :itemDate="session.startDate">
+                :itemDate="session.startDate"
+                :itemID="session.id">
                 </workout-list-item>
             </ion-list>
         </template>

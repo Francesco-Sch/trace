@@ -45,6 +45,11 @@ const store = createStore({
                 sessions => sessions.value == 'running.jogging' ||
                 sessions.value == 'running'
             );
+
+            // Set custom IDs
+            for(let i = 0; i < filteredRunningSessions.length; i++) {
+                filteredRunningSessions[i].id = Math.random();
+            }
             
             console.log(filteredRunningSessions);
             state.runningSessions = filteredRunningSessions;

@@ -1,5 +1,5 @@
 <template>
-        <ion-item lines="none" button="true" detail="true" :router-link="`/visualization/${temporaryId}`">
+        <ion-item lines="none" button="true" detail="true" :router-link="`/visualization/${itemID}`">
             <ion-thumbnail slot="start">
                 <img src="../../../public/assets/gradients/workout_track.jpg">
             </ion-thumbnail>
@@ -24,18 +24,14 @@ export default {
     data() {
         return {
             formattedDate: '',
-            temporaryId: ''
         }
     },
-    props: ['itemTitle', 'itemDate'],
+    props: ['itemTitle', 'itemDate', 'itemID'],
     methods: {
     },
     created() {
         // Format date
         this.formattedDate = moment(this.itemDate).format('DD/MM/YYYY');
-
-        //Id for component
-        this.temporaryId = Math.random();
     }
 }
 </script>
