@@ -1,14 +1,14 @@
 <template>
-    <ion-item lines="none">
-        <ion-thumbnail slot="start">
-            <img src="../../../public/assets/gradients/workout_track.jpg">
-        </ion-thumbnail>
+        <ion-item lines="none" button="true" detail="true" :router-link="`/visualization/${temporaryId}`">
+            <ion-thumbnail slot="start">
+                <img src="../../../public/assets/gradients/workout_track.jpg">
+            </ion-thumbnail>
 
-        <ion-label>
-            <h3>{{ itemTitle }}</h3>
-            <p>{{ formattedDate }}</p>
-        </ion-label>
-    </ion-item>
+            <ion-label>
+                <h3>{{ itemTitle }}</h3>
+                <p>{{ formattedDate }}</p>
+            </ion-label>
+        </ion-item>
 </template>
 
 <script>
@@ -24,6 +24,7 @@ export default {
     data() {
         return {
             formattedDate: '',
+            temporaryId: ''
         }
     },
     props: ['itemTitle', 'itemDate'],
@@ -32,6 +33,9 @@ export default {
     created() {
         // Format date
         this.formattedDate = moment(this.itemDate).format('DD/MM/YYYY');
+
+        //Id for component
+        this.temporaryId = Math.random();
     }
 }
 </script>
