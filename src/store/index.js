@@ -23,6 +23,9 @@ const store = createStore({
         },
         runningSessions: state => {
             return state.runningSessions
+        },
+        runningSession: (state) => (id) => {
+            return state.runningSessions.find(runningSessions => runningSessions.id == id)
         }
     },
     mutations: {

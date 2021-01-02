@@ -13,17 +13,21 @@ export default {
         return {
             // Weather API
             http: "https://",
-            url: "api.openweathermap.org/data/2.5/weather",
-            units: "imperial",
+            url: "weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/history",
+            aggregateHours: '1',
+            units: "us",
+            json: 'json',
+            astronomy: true,
+            startDate: Date,
+            endDate:  Date,
             apiKey: weatherApiKey,
             weather: {},
+
+            // moment().format('yyyy-MM-DDTHH:mm:ss')
 
             // Position
             latitude: 50.773,
             longitude: 8.748,
-
-            // Current time
-            currentTime: new Date(),
 
             // Day or Night
             itIsNight: true,
@@ -34,6 +38,9 @@ export default {
             maxTemperature: 240,
             temperature: Number,
             temperatureHue: Number,
+
+            // Running Session
+            runningSession: {}
         }
     },
     methods: {
@@ -57,13 +64,24 @@ export default {
             s.draw = () => {
             }
 
-            s.retrieveWeatherData = () => {  
-                let querys = "?lat=" + this.latitude + "&lon=" + this.longitude + "&units=" + this.units;
+            s.retrieveWeatherData = () => { 
+                // Get Start and End Date for request
+                // and formats it
+                let id = this.$route.params.id;
+                this.runningSession = this.$store.getters.runningSession(id);
+
+                this.startDate = moment(this.runningSession.startDate).format('yyyy-MM-DDTHH:mm:ss');
+                this.endDate = moment(this.runningSession.endDate).format('yyyy-MM-DDTHH:mm:ss');
                 
-                fetch(this.http + this.url + querys + "&appid=" + this.apiKey)
+                let querys = "?locations=" + this.latitude + "," + this.longitude + "&aggregateHours=" + this.aggregateHours + 
+                              "&unitGroup=" + this.units + "&shortColumnNames=" + false + "&contentType=" + this.json + 
+                              "&startDateTime=" + this.startDate + "&endDateTime=" + this.endDate + "&includeAstronomy=" + this.astronomy;
+                
+                fetch(this.http + this.url + querys + "&key=" + this.apiKey)
                 .then(response => response.json())
                 .then(data => this.weather = data)
                 .then(() => {
+                        console.log(this.weather.locations['50.773,8.748'].values[0]);
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
@@ -72,20 +90,15 @@ export default {
             }
 
             s.displayDayOrNight = () => {
-                // Get unix seconds of sunrise and sunset
-                let sunriseUnix = this.weather.sys.sunrise;
-                let sunsetUnix = this.weather.sys.sunset;
-
                 // Convert unix seconds to normal format for moment.js
-                let sunriseDate = new Date(sunriseUnix*1000);
-                let sunsetDate = new Date(sunsetUnix*1000);
-                let formattedSunrise = moment(sunriseDate).format();
-                let formattedSunset = moment(sunsetDate).format();
+                let sunriseDate = this.weather.locations['50.773,8.748'].values[0].sunrise;
+                let sunsetDate = this.weather.locations['50.773,8.748'].values[0].sunset;
+                let activityDate = this.weather.locations['50.773,8.748'].values[0].datetimeStr;
                 
-                console.log("CurrentTime: " + this.currentTime + " ; Sunrise: " + formattedSunrise + " ; Sunset: " + formattedSunset);
+                console.log("CurrentTime: " + activityDate + " ; Sunrise: " + sunriseDate + " ; Sunset: " + sunsetDate);
                 
                 // Display if it is day or night
-                if(moment(this.currentTime).isSameOrBefore(formattedSunset) || moment(this.currentTime).isSameOrAfter(formattedSunset)) {
+                if(moment(activityDate).isSameOrBefore(sunsetDate) || moment(activityDate).isSameOrAfter(sunriseDate)) {
                     // Sets background to day
                     s.background(0,0,100); // white
 
@@ -104,7 +117,7 @@ export default {
 
             s.weatherColor = () => {
                 // Get current temperature
-                this.temperature = this.weather.main.temp;
+                this.temperature = this.weather.locations['50.773,8.748'].values[0].mint;
                 
                 // Check if temperature is above maximum temperature
                 // Sets hue for shape color
@@ -212,7 +225,7 @@ export default {
             }
 
             s.drawWeatherShape = () => {
-                let currentWeatherCondition = this.weather.weather[0].main;
+                let currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
                 console.log(currentWeatherCondition);
 
                 // Checks present weather condition
