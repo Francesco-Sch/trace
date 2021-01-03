@@ -51,7 +51,7 @@ export default {
             s.setup = () => {
                 // Display config
                 s.createCanvas(s.displayWidth, s.displayHeight);
-                s.frameRate(2);
+                s.frameRate(25);
 
                 // Color config
                 s.colorMode(s.HSB, 240, 100, 100, 100);
@@ -64,12 +64,13 @@ export default {
 
             s.draw = () => {
                 s.push();
-                s.fill(160,0,0);
-                s.ellipse(s.displayWidth/2,s.displayHeight/2,95,95);
-                /* s.filter(s.BLUR, 6);
-                s.stroke(0);
-                s.fill(160,100,0);
-                s.ellipse(s.displayWidth/2,s.displayHeight/2,90,90); */
+                // Config for blobs
+                s.noFill();
+                s.stroke(this.temperatureHue, 100, 100);
+                s.strokeWeight(2);
+
+                // Blob drawing
+                s.blob(s.displayWidth/2,s.displayHeight/2);
                 s.pop();
             }
 
@@ -247,6 +248,34 @@ export default {
                     // Draws gradient shapes for sun (or other weather conditions)
                     s.drawSun(750);
                 }
+            }
+
+            /* ------------- Running-Visualization ----------------- */
+
+            // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
+            s.blob = (xPoint,yPoint) => {
+                let noiseMax = 0.6;
+                let x1 = xPoint;
+                let y1 = yPoint;
+                
+                s.beginShape();
+
+                // i increment defines the number of vertices/sphere in the circle
+                for(let i=0; i<s.TWO_PI; i+=0.05) { 
+
+                    let xOffset = s.map(s.cos(i), -1, 1, 0, noiseMax);  
+                    let yOffset = s.map(s.sin(i), -1, 1, 0, noiseMax);
+                    
+                    let radius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, 150);
+                    
+                    // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
+                    let x = x1 + radius * s.cos(i);
+                    let y =	y1 + radius * s.sin(i);
+
+                    s.vertex(x,y);
+                }
+
+                s.endShape(s.CLOSE);
             }
 
         }
