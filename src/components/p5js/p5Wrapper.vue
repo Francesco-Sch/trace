@@ -47,6 +47,7 @@ export default {
     },
     mounted() {
         const p5Sketch = (s) => {
+            let blobs = [];
 
             s.setup = () => {
                 // Display config
@@ -58,20 +59,24 @@ export default {
                 s.noStroke();
                 s.ellipseMode(s.CENTER);
 
+                // Display weather
                 s.displayWeatherData();
-
             }
 
             s.draw = () => {
-                s.push();
-                // Config for blobs
-                s.noFill();
-                s.stroke(this.temperatureHue, 100, 100);
-                s.strokeWeight(2);
-
                 // Blob drawing
-                s.blob(s.displayWidth/2,s.displayHeight/2);
-                s.pop();
+                for(let i = 0; i < blobs.length; i++) {
+                    blobs[i].display();
+                    for(let j = 0; j < blobs.length; j++) {
+                        if(i != j && blobs[i].intersects(blobs[j])) {
+                            blobs[i].changeColor();
+                            blobs[j].changeColor();
+                            console.log("They are intersecting");
+                        } else {
+                            console.log("They are not intersecting");
+                        }
+                    }
+                }
             }
 
             s.displayWeatherData = () => { 
@@ -94,6 +99,7 @@ export default {
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
+                        s.constructBlobs();
                     }
                 )
             }
@@ -253,29 +259,61 @@ export default {
             /* ------------- Running-Visualization ----------------- */
 
             // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
-            s.blob = (xPoint,yPoint) => {
-                let noiseMax = 0.6;
-                let x1 = xPoint;
-                let y1 = yPoint;
+            class Blob { 
+                constructor(xPoint, yPoint, noiseMax, color) {
+                    this.noiseMax = noiseMax;
+                    this.x = xPoint;
+                    this.y = yPoint;
+                    this.radius = 200;
+                    this.color = color;
+                }
                 
-                s.beginShape();
+                display() {
+                    // Config for blobs
+                    s.noFill();
+                    s.stroke(this.color, 100, 100);
+                    s.strokeWeight(2);
 
-                // i increment defines the number of vertices/sphere in the circle
-                for(let i=0; i<s.TWO_PI; i+=0.05) { 
+                    // Starts drawing the shape
+                    s.beginShape();
 
-                    let xOffset = s.map(s.cos(i), -1, 1, 0, noiseMax);  
-                    let yOffset = s.map(s.sin(i), -1, 1, 0, noiseMax);
-                    
-                    let radius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, 150);
-                    
-                    // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
-                    let x = x1 + radius * s.cos(i);
-                    let y =	y1 + radius * s.sin(i);
+                    // i increment defines the number of vertices/sphere in the circle
+                    for(let i = 0; i < s.TWO_PI; i += 0.05) { 
 
-                    s.vertex(x,y);
+                        let xOffset = s.map(s.cos(i), -1, 1, 0, this.noiseMax);  
+                        let yOffset = s.map(s.sin(i), -1, 1, 0, this.noiseMax);
+                        
+                        this.radius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, 150);
+                        
+                        // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
+                        let x1 = this.x + this.radius * s.cos(i);
+                        let y2 = this.y + this.radius * s.sin(i);
+
+                        s.vertex(x1,y2);
+                    }
+                    s.endShape(s.CLOSE);
                 }
 
-                s.endShape(s.CLOSE);
+                changeColor() {
+                    this.color = s.color(230, 100, 100);
+                }
+
+                intersects(other) {
+                    let d = s.dist(this.x, this.y, other.x, other.y)
+                    if(d < this.radius + other.radius) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                
+            }
+
+            s.constructBlobs = () => {
+                // Add fitness data objects
+                for(let i = 0; i < 2; i++) {
+                    blobs[i] = new Blob(s.random(s.displayWidth), s.random(s.displayHeight), 0.6, this.temperatureHue);
+                }
             }
 
         }
