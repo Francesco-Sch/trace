@@ -67,15 +67,6 @@ export default {
                 // Blob drawing
                 for(let i = 0; i < blobs.length; i++) {
                     blobs[i].display();
-                    for(let j = 0; j < blobs.length; j++) {
-                        if(i != j && blobs[i].intersects(blobs[j])) {
-                            blobs[i].changeColor();
-                            blobs[j].changeColor();
-                            console.log("They are intersecting");
-                        } else {
-                            console.log("They are not intersecting");
-                        }
-                    }
                 }
             }
 
@@ -311,8 +302,36 @@ export default {
 
             s.constructBlobs = () => {
                 // Add fitness data objects
-                for(let i = 0; i < 2; i++) {
-                    blobs[i] = new Blob(s.random(s.displayWidth), s.random(s.displayHeight), 0.6, this.temperatureHue);
+
+                let overlapping = false;
+                let protection = 0;
+
+                while(blobs.length < 59) {
+                //for(let i = 0; i < 8; i++) {
+                    let blob = new Blob(s.random(s.displayWidth), s.random(s.displayHeight), s.random(0.1, 0.5), this.temperatureHue);
+
+                    
+
+                    for(let j = 0; j < blobs.length; j++) {
+                        var otherBlob = blobs[j];
+                        var d = s.dist(blob.x, blob.y, otherBlob.x, otherBlob.y);
+
+                        if(d < blob.radius + otherBlob.radius) {
+                            overlapping = true;
+                            //break;
+                        }
+                    }
+                    console.log('Hello');
+
+                    if(!overlapping) {
+                        blobs.push(blob);
+                    }
+
+                    protection++;
+
+                    if(protection > 10000) {
+                        break;
+                    }
                 }
             }
 
