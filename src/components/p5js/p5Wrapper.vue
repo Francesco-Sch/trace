@@ -39,6 +39,9 @@ export default {
             temperature: Number,
             temperatureHue: Number,
 
+            // Current weather condition
+            currentWeatherCondition: String,
+
             // Running Session
             runningSession: {}
         }
@@ -66,6 +69,7 @@ export default {
             s.draw = () => {
                 // Blob drawing
                 for(let i = 0; i < blobs.length; i++) {
+                    blobs[i].checkColor();
                     blobs[i].display();
                 }
             }
@@ -231,14 +235,14 @@ export default {
             }
 
             s.drawWeatherShape = () => {
-                let currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
-                console.log(currentWeatherCondition);
+                this.currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
+                console.log(this.currentWeatherCondition);
 
                 // Checks present weather condition
-                if(currentWeatherCondition == "Clouds") {
+                if(this.currentWeatherCondition == "Clouds") {
                     // Draws gradient shapes for clouds
                     s.drawClouds();
-                } else if(currentWeatherCondition == "Rain") {
+                } else if(this.currentWeatherCondition == "Rain") {
                     // Draws gradient shapes for rain
                     s.drawRain(5);
                 } else {
@@ -251,13 +255,21 @@ export default {
 
             // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
             class Blob { 
-                constructor(xPoint, yPoint, radius, noiseMax, noiseSeed, color) {
+                constructor(xPoint, yPoint, radius, noiseMax, noiseSeed) {
                     this.x = xPoint;
                     this.y = yPoint;
                     this.radius = radius;
                     this.noiseMax = noiseMax;
                     this.noiseSeed = noiseSeed;
-                    this.color = color;
+                    this.color;
+                }
+
+                checkColor() {
+                    if(this.currentWeatherCondition == 'Rain') {
+                        this.color = s.color(this.temperatureHue, 100, 100)
+                    } else {
+                        this.color = s.color(this.temperatureHue, 0, 100)
+                    }
                 }
                 
                 display() {
@@ -298,8 +310,7 @@ export default {
                         s.random(s.displayHeight), 
                         s.random(30,225), 
                         s.random(0.2,0.6),
-                        s.random(0,100),
-                        this.temperatureHue);
+                        s.random(0,100));
 
                     for(let j = 0; j < blobs.length; j++) {
                         var otherBlob = blobs[j];
