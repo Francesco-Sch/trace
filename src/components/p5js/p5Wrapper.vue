@@ -251,77 +251,64 @@ export default {
 
             // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
             class Blob { 
-                constructor(xPoint, yPoint, noiseMax, color) {
-                    this.noiseMax = noiseMax;
+                constructor(xPoint, yPoint, radius, noiseMax, noiseSeed, color) {
                     this.x = xPoint;
                     this.y = yPoint;
-                    this.radius = 200;
+                    this.radius = radius;
+                    this.noiseMax = noiseMax;
+                    this.noiseSeed = noiseSeed;
                     this.color = color;
                 }
                 
                 display() {
                     // Config for blobs
                     s.noFill();
-                    s.stroke(this.color, 100, 100);
+                    s.stroke(this.color, 0, 100);
                     s.strokeWeight(2);
+                    s.noiseSeed(this.noiseSeed)
 
                     // Starts drawing the shape
                     s.beginShape();
 
                     // i increment defines the number of vertices/sphere in the circle
                     for(let i = 0; i < s.TWO_PI; i += 0.05) { 
-
                         let xOffset = s.map(s.cos(i), -1, 1, 0, this.noiseMax);  
                         let yOffset = s.map(s.sin(i), -1, 1, 0, this.noiseMax);
                         
-                        this.radius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, 150);
+                        let tempRadius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, this.radius);
                         
                         // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
-                        let x1 = this.x + this.radius * s.cos(i);
-                        let y2 = this.y + this.radius * s.sin(i);
+                        let x1 = this.x + tempRadius * s.cos(i);
+                        let y2 = this.y + tempRadius * s.sin(i);
 
                         s.vertex(x1,y2);
                     }
                     s.endShape(s.CLOSE);
                 }
-
-                changeColor() {
-                    this.color = s.color(230, 100, 100);
-                }
-
-                intersects(other) {
-                    let d = s.dist(this.x, this.y, other.x, other.y)
-                    if(d < this.radius + other.radius) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                
             }
 
             s.constructBlobs = () => {
                 // Add fitness data objects
-
                 let overlapping = false;
                 let protection = 0;
 
-                while(blobs.length < 59) {
-                //for(let i = 0; i < 8; i++) {
-                    let blob = new Blob(s.random(s.displayWidth), s.random(s.displayHeight), s.random(0.1, 0.5), this.temperatureHue);
-
-                    
+                while(blobs.length < 8) {
+                    let blob = new Blob(
+                        s.random(s.displayWidth), 
+                        s.random(s.displayHeight), 
+                        s.random(30,225), 
+                        s.random(0.2,0.6),
+                        s.random(0,100),
+                        this.temperatureHue);
 
                     for(let j = 0; j < blobs.length; j++) {
                         var otherBlob = blobs[j];
                         var d = s.dist(blob.x, blob.y, otherBlob.x, otherBlob.y);
 
-                        if(d < blob.radius + otherBlob.radius) {
-                            overlapping = true;
-                            //break;
-                        }
+                         if(d < blob.radius + otherBlob.radius) {
+                             overlapping = true;
+                         }
                     }
-                    console.log('Hello');
 
                     if(!overlapping) {
                         blobs.push(blob);
@@ -329,7 +316,7 @@ export default {
 
                     protection++;
 
-                    if(protection > 10000) {
+                    if(protection > 20000) {
                         break;
                     }
                 }
