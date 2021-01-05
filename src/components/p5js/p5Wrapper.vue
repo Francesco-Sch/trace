@@ -51,6 +51,11 @@ export default {
     mounted() {
         const p5Sketch = (s) => {
             let blobs = [];
+            let currentCount = 1;
+            let maxCount = 6;
+            let x = [];
+            let y = [];
+            let r = [];
 
             s.setup = () => {
                 // Display config
@@ -72,6 +77,16 @@ export default {
                     blobs[i].checkColor();
                     blobs[i].display();
                 }
+
+            //    for (var i = 0; i < maxCount; i++) {
+            //        s.push();
+            //        s.noFill();
+            //         s.stroke(240, 0, 100);
+            //         s.strokeWeight(2);
+
+            //         s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
+            //         s.pop();
+            //     }
             }
 
             s.displayWeatherData = () => { 
@@ -255,9 +270,9 @@ export default {
 
             // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
             class Blob { 
-                constructor(xPoint, yPoint, radius, noiseMax, noiseSeed) {
-                    this.x = xPoint;
-                    this.y = yPoint;
+                constructor(xPos, yPos, radius, noiseMax, noiseSeed) {
+                    this.x = xPos;
+                    this.y = yPos;
                     this.radius = radius;
                     this.noiseMax = noiseMax;
                     this.noiseSeed = noiseSeed;
@@ -275,7 +290,7 @@ export default {
                 display() {
                     // Config for blobs
                     s.noFill();
-                    s.stroke(this.color, 0, 100);
+                    s.stroke(this.color);
                     s.strokeWeight(2);
                     s.noiseSeed(this.noiseSeed)
 
@@ -301,40 +316,74 @@ export default {
 
             s.constructBlobs = () => {
                 // Add fitness data objects
-                let overlapping = false;
-                let protection = 0;
+                // let overlapping = false;
+                // let protection = 0;
 
-                while(blobs.length < 8) {
-                    let blob = new Blob(
-                        s.random(s.displayWidth), 
-                        s.random(s.displayHeight), 
-                        s.random(30,225), 
-                        s.random(0.2,0.6),
-                        s.random(0,100));
+                x[0] = s.displayWidth / 2;
+                y[0] = s.displayHeight / 2;
+                r[0] = 100;
 
-                    for(let j = 0; j < blobs.length; j++) {
-                        var otherBlob = blobs[j];
-                        var d = s.dist(blob.x, blob.y, otherBlob.x, otherBlob.y);
+                for(let j = 0; j < maxCount; j++) {
+                    // create a random set of parameters
+                    var newR = s.random(65, 125);
+                    var newX = s.random(newR, s.displayWidth - newR);
+                    var newY = s.random(newR, s.displayHeight - newR);
 
-                         if(d < blob.radius + otherBlob.radius) {
-                             overlapping = true;
-                         }
+                    var closestDist = Number.MAX_VALUE;
+                    var closestIndex = 0;
+                    // which circle is the closest?
+                    for (var i = 0; i < currentCount; i++) {
+                        var newDist = s.dist(newX, newY, x[i], y[i]);
+                        if (newDist < closestDist) {
+                            closestDist = newDist;
+                            closestIndex = i;
+                        }
                     }
 
-                    if(!overlapping) {
-                        blobs.push(blob);
-                    }
+                    // aline it to the closest circle outline
+                    var angle = s.atan2(newY - y[closestIndex], newX - x[closestIndex]);
 
-                    protection++;
-
-                    if(protection > 20000) {
-                        break;
-                    }
+                    x[currentCount] = x[closestIndex] + s.cos(angle) * (r[closestIndex] + newR);
+                    y[currentCount] = y[closestIndex] + s.sin(angle) * (r[closestIndex] + newR);
+                    r[currentCount] = newR;
+                    currentCount++;
                 }
+
+                for(let i = 0; i < maxCount; i++) {
+                    let blob = new Blob( 
+                    x[i],
+                    y[i],
+                    r[i], 
+                    s.random(0.3,0.5),
+                    s.random(0,100));
+
+                    blobs.push(blob)
+                }
+                
+                // while(blobs.length < 8) {
+
+                //     for(let j = 0; j < blobs.length; j++) {
+                //         var otherBlob = blobs[j];
+                //         var d = s.dist(blob.x, blob.y, otherBlob.x, otherBlob.y);
+
+                //          if(d < blob.radius + otherBlob.radius) {
+                //              overlapping = true;
+                //          }
+                //     }
+
+                //     if(!overlapping) {
+                //         blobs.push(blob);
+                //     }
+
+                //     protection++;
+
+                //     if(protection > 20000) {
+                //         break;
+                //     }
+                //}
             }
 
         }
-
         // Load sketch into div
         new P5(p5Sketch, 'p5canvas');
     }
