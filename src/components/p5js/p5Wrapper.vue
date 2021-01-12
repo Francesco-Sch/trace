@@ -52,6 +52,7 @@ export default {
         const p5Sketch = (s) => {
             let maxCount = 5;
             let currentCount = 0;
+
             let x = new Array;
             let y = new Array;
             let r = new Array;
