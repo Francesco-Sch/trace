@@ -8,7 +8,7 @@
                 <ion-label>Your last Workouts</ion-label>
             </ion-list-header>
 
-            <ion-list>
+            <ion-list v-show="runningSessions">
                 <workout-list-item 
                 v-for="session in runningSessions"
                 :key="session.distance"
@@ -25,7 +25,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import BaseLayout from '../layouts/BaseLayout.vue'
 import WorkoutListItem from '../components/workouts/WorkoutListItem.vue'
-import { IonList, IonListHeader, IonLabel } from '@ionic/vue';
+import { IonList, IonListHeader, IonLabel, loadingController } from '@ionic/vue';
 
 export default {
     components: {
@@ -33,20 +33,41 @@ export default {
         WorkoutListItem,
         IonList,
         IonListHeader,
-        IonLabel
+        IonLabel,
     },
     data() {
+        return {} 
     },
     methods: {
         ...mapActions(['fetchRunningDays', 'fetchRunningActivites']),
+
+        async presentLoading() {
+            const loading = await loadingController
+                .create({
+                    spinner: 'crescent',
+                    cssClass: 'workout-loading',
+                });
+
+            await loading.present();
+        },
+        async destroyLoading() {
+            await loadingController.dismiss()
+        }
     },
     computed: {
         ...mapGetters(['runningSessions']),
     },
     async created() {
+        // Shows loading scree
+        this.presentLoading()
+
+        // Gets data
         await this.fetchRunningDays();
-        this.fetchRunningActivites();
-    }
+        await this.fetchRunningActivites();
+
+        // Destroys loading screen after data was loaded
+        this.destroyLoading()
+    },
 }
 </script>
 

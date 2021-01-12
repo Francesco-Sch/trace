@@ -50,7 +50,12 @@ export default {
     },
     mounted() {
         const p5Sketch = (s) => {
-            let blobs = [];
+            let maxCount = 5;
+
+            let x = new Array;
+            let y = new Array;
+            let r = new Array;
+
 
             s.setup = () => {
                 // Display config
@@ -67,10 +72,21 @@ export default {
             }
 
             s.draw = () => {
-                // Blob drawing
-                for(let i = 0; i < blobs.length; i++) {
-                    blobs[i].checkColor();
-                    blobs[i].display();
+
+               for (var i = 0; i < maxCount; i++) {
+                   s.push();
+                   s.noFill();
+                   s.strokeWeight(2);
+
+                   // Sets stroke color equivalent to day or night
+                   if(this.itIsNight == false) {
+                        s.stroke(240, 0, 100);
+                   } else {
+                        s.stroke(240, 100, 0);
+                   }
+
+                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
+                    s.pop();
                 }
             }
 
@@ -94,7 +110,7 @@ export default {
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
-                        s.constructBlobs();
+                        s.constructBlubbles();
                     }
                 )
             }
@@ -108,7 +124,7 @@ export default {
                 console.log("CurrentTime: " + activityDate + " ; Sunrise: " + sunriseDate + " ; Sunset: " + sunsetDate);
                 
                 // Display if it is day or night
-                if(moment(activityDate).isSameOrBefore(sunsetDate) || moment(activityDate).isSameOrAfter(sunriseDate)) {
+                if(moment(activityDate).isSameOrBefore(sunsetDate) && moment(activityDate).isSameOrAfter(sunriseDate)) {
                     // Sets background to day
                     s.background(0,0,100); // white
 
@@ -253,88 +269,64 @@ export default {
 
             /* ------------- Running-Visualization ----------------- */
 
-            // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
-            class Blob { 
-                constructor(xPoint, yPoint, radius, noiseMax, noiseSeed) {
-                    this.x = xPoint;
-                    this.y = yPoint;
-                    this.radius = radius;
-                    this.noiseMax = noiseMax;
-                    this.noiseSeed = noiseSeed;
-                    this.color;
-                }
+            s.constructBlubbles = () => {
+                x[0] = s.displayWidth / 2;
+                y[0] = s.displayHeight / 2;
+                r[0] = 100;
+                let currentCount = 1;
 
-                checkColor() {
-                    if(this.currentWeatherCondition == 'Rain') {
-                        this.color = s.color(this.temperatureHue, 100, 100)
-                    } else {
-                        this.color = s.color(this.temperatureHue, 0, 100)
-                    }
-                }
-                
-                display() {
-                    // Config for blobs
-                    s.noFill();
-                    s.stroke(this.color, 0, 100);
-                    s.strokeWeight(2);
-                    s.noiseSeed(this.noiseSeed)
+                while(currentCount < maxCount) {
+                    // create a random set of parameters
+                    var newR = s.random(50, 125);
+                    var newX = s.random(newR, s.displayWidth - newR);
+                    var newY = s.random(newR, s.displayHeight - newR);
 
-                    // Starts drawing the shape
-                    s.beginShape();
+                    var closestDist = Number.MAX_VALUE;
+                    var closestIndex = 0;
 
-                    // i increment defines the number of vertices/sphere in the circle
-                    for(let i = 0; i < s.TWO_PI; i += 0.05) { 
-                        let xOffset = s.map(s.cos(i), -1, 1, 0, this.noiseMax);  
-                        let yOffset = s.map(s.sin(i), -1, 1, 0, this.noiseMax);
-                        
-                        let tempRadius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, this.radius);
-                        
-                        // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
-                        let x1 = this.x + tempRadius * s.cos(i);
-                        let y2 = this.y + tempRadius * s.sin(i);
+                    console.log(x.length);
+                    console.log(currentCount);
 
-                        s.vertex(x1,y2);
-                    }
-                    s.endShape(s.CLOSE);
-                }
-            }
-
-            s.constructBlobs = () => {
-                // Add fitness data objects
-                let overlapping = false;
-                let protection = 0;
-
-                while(blobs.length < 8) {
-                    let blob = new Blob(
-                        s.random(s.displayWidth), 
-                        s.random(s.displayHeight), 
-                        s.random(30,225), 
-                        s.random(0.2,0.6),
-                        s.random(0,100));
-
-                    for(let j = 0; j < blobs.length; j++) {
-                        var otherBlob = blobs[j];
-                        var d = s.dist(blob.x, blob.y, otherBlob.x, otherBlob.y);
-
-                         if(d < blob.radius + otherBlob.radius) {
-                             overlapping = true;
-                         }
+                    // which circle is the closest?
+                    for (var i = 0; i < currentCount; i++) {
+                        var newDist = s.dist(newX, newY, x[i], y[i]);
+                        if (newDist < closestDist) {
+                            closestDist = newDist;
+                            closestIndex = i;
+                        }
                     }
 
-                    if(!overlapping) {
-                        blobs.push(blob);
+                    // aline it to the closest circle outline
+                    var angle = s.atan2(newY - y[closestIndex], newX - x[closestIndex]);
+
+                    x[currentCount] = x[closestIndex] + s.cos(angle) * (r[closestIndex] + newR);
+                    y[currentCount] = y[closestIndex] + s.sin(angle) * (r[closestIndex] + newR);
+                    r[currentCount] = newR;
+
+                    for(let k = 0; k < currentCount; k++) {
+                        let otherX = x[k];
+                        let otherY = y[k];
+                        let otherR = r[k];
+
+                        let d = s.dist(x[currentCount], y[currentCount], otherX, otherY);
+
+                        if(d < r[currentCount] + otherR) {
+                            x = x.filter(item => item !== otherX);
+                            y = y.filter(item => item !== otherY);
+                            r = r.filter(item => item !== otherR);
+                            currentCount = currentCount - 1;
+                            console.log("Bubble destroyed")
+                        }
                     }
 
-                    protection++;
+                    currentCount++;
+                    console.log("Current count: " + currentCount)
 
-                    if(protection > 20000) {
-                        break;
-                    }
+                    
                 }
             }
 
         }
-
         // Load sketch into div
         new P5(p5Sketch, 'p5canvas');
     }
