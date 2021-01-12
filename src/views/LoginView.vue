@@ -5,14 +5,14 @@
                 <img src="../../public/assets/logo/trace-logo_text_black.svg" alt="Trace logo in black" class="trace-logo">
                 
                 <ion-button 
-                v-if="isLoggedIn"
+                v-show="isLoggedIn"
                 router-link="/workouts"
                 expand="block" 
                 color="dark" 
                 >Enter app</ion-button>
 
                 <ion-button 
-                    v-else 
+                    v-show="!isLoggedIn" 
                     expand="block" 
                     color="dark" 
                     @click="requestAuthentication"
@@ -24,6 +24,7 @@
 
 <script>
 import { IonButton } from '@ionic/vue'
+import { mapGetters } from 'vuex'
 import BaseLayout from '../layouts/BaseLayout.vue'
 
 export default {
@@ -31,18 +32,16 @@ export default {
         BaseLayout,
         IonButton
     },
-    data() {
-        return {
-            isLoggedIn: false
-        }
-    },
     methods: {
         requestAuthentication() {
             this.$store.dispatch('healthAuthentication')
-            .then(
-                this.isLoggedIn = this.$store.getters.isLoggedIn
-            )   
         }
+    },
+    computed: {
+        ...mapGetters(['isLoggedIn'])
+    },
+    created() {
+        this.requestAuthentication();
     }
 }
 </script>
@@ -70,4 +69,6 @@ ion-button
     margin-bottom: 7%
     --padding-top: 20px
     --padding-bottom: 20px
+
+    font-weight: 700
 </style>
