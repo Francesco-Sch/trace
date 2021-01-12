@@ -51,7 +51,6 @@ export default {
     mounted() {
         const p5Sketch = (s) => {
             let maxCount = 5;
-            let currentCount = 0;
 
             let x = new Array;
             let y = new Array;
@@ -267,15 +266,19 @@ export default {
                 x[0] = s.displayWidth / 2;
                 y[0] = s.displayHeight / 2;
                 r[0] = 100;
+                let currentCount = 1;
 
                 while(currentCount < maxCount) {
                     // create a random set of parameters
-                    var newR = s.random(65, 125);
+                    var newR = s.random(50, 125);
                     var newX = s.random(newR, s.displayWidth - newR);
                     var newY = s.random(newR, s.displayHeight - newR);
 
                     var closestDist = Number.MAX_VALUE;
                     var closestIndex = 0;
+
+                    console.log(x.length);
+                    console.log(currentCount);
 
                     // which circle is the closest?
                     for (var i = 0; i < currentCount; i++) {
@@ -300,16 +303,18 @@ export default {
 
                         let d = s.dist(x[currentCount], y[currentCount], otherX, otherY);
 
-                        if(d < r[currentCount] + otherR && currentCount >= 2) {
+                        if(d < r[currentCount] + otherR) {
                             x = x.filter(item => item !== otherX);
                             y = y.filter(item => item !== otherY);
                             r = r.filter(item => item !== otherR);
+                            currentCount = currentCount - 1;
                             console.log("Bubble destroyed")
-                            currentCount--;
-                        } else {
-                            currentCount++;
                         }
                     }
+
+                    currentCount++;
+                    console.log("Current count: " + currentCount)
+
                     
                 }
                 console.log(x);
