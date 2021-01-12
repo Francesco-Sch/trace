@@ -58,16 +58,16 @@ export default {
         ...mapGetters(['runningSessions']),
     },
     async created() {
+        // Shows loading scree
         this.presentLoading()
 
+        // Gets data
         await this.fetchRunningDays();
         await this.fetchRunningActivites();
 
+        // Destroys loading screen after data was loaded
         this.destroyLoading()
     },
-    watch() {
-    }
-
 }
 </script>
 

@@ -50,12 +50,12 @@ export default {
     },
     mounted() {
         const p5Sketch = (s) => {
-            let blobs = [];
-            let currentCount = 1;
-            let maxCount = 6;
-            let x = [];
-            let y = [];
-            let r = [];
+            let maxCount = 5;
+            let currentCount = 0;
+            let x = new Array;
+            let y = new Array;
+            let r = new Array;
+
 
             s.setup = () => {
                 // Display config
@@ -72,21 +72,15 @@ export default {
             }
 
             s.draw = () => {
-                // Blob drawing
-                for(let i = 0; i < blobs.length; i++) {
-                    blobs[i].checkColor();
-                    blobs[i].display();
+               for (var i = 0; i < maxCount; i++) {
+                   s.push();
+                   s.noFill();
+                    s.stroke(240, 0, 100);
+                    s.strokeWeight(2);
+
+                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
+                    s.pop();
                 }
-
-            //    for (var i = 0; i < maxCount; i++) {
-            //        s.push();
-            //        s.noFill();
-            //         s.stroke(240, 0, 100);
-            //         s.strokeWeight(2);
-
-            //         s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
-            //         s.pop();
-            //     }
             }
 
             s.displayWeatherData = () => { 
@@ -268,62 +262,12 @@ export default {
 
             /* ------------- Running-Visualization ----------------- */
 
-            // Blob creation (https://www.youtube.com/watch?v=ZI1dmHv3MeM&t=267s)
-            class Blob { 
-                constructor(xPos, yPos, radius, noiseMax, noiseSeed) {
-                    this.x = xPos;
-                    this.y = yPos;
-                    this.radius = radius;
-                    this.noiseMax = noiseMax;
-                    this.noiseSeed = noiseSeed;
-                    this.color;
-                }
-
-                checkColor() {
-                    if(this.currentWeatherCondition == 'Rain') {
-                        this.color = s.color(this.temperatureHue, 100, 100)
-                    } else {
-                        this.color = s.color(this.temperatureHue, 0, 100)
-                    }
-                }
-                
-                display() {
-                    // Config for blobs
-                    s.noFill();
-                    s.stroke(this.color);
-                    s.strokeWeight(2);
-                    s.noiseSeed(this.noiseSeed)
-
-                    // Starts drawing the shape
-                    s.beginShape();
-
-                    // i increment defines the number of vertices/sphere in the circle
-                    for(let i = 0; i < s.TWO_PI; i += 0.05) { 
-                        let xOffset = s.map(s.cos(i), -1, 1, 0, this.noiseMax);  
-                        let yOffset = s.map(s.sin(i), -1, 1, 0, this.noiseMax);
-                        
-                        let tempRadius = s.map(s.noise(xOffset,yOffset), 0, 1, 20, this.radius);
-                        
-                        // Polar cartician coordinate (the cos and sin representation of x and y coordinates)
-                        let x1 = this.x + tempRadius * s.cos(i);
-                        let y2 = this.y + tempRadius * s.sin(i);
-
-                        s.vertex(x1,y2);
-                    }
-                    s.endShape(s.CLOSE);
-                }
-            }
-
             s.constructBlobs = () => {
-                // Add fitness data objects
-                // let overlapping = false;
-                // let protection = 0;
-
                 x[0] = s.displayWidth / 2;
                 y[0] = s.displayHeight / 2;
                 r[0] = 100;
 
-                for(let j = 0; j < maxCount; j++) {
+                while(currentCount < maxCount) {
                     // create a random set of parameters
                     var newR = s.random(65, 125);
                     var newX = s.random(newR, s.displayWidth - newR);
@@ -331,6 +275,7 @@ export default {
 
                     var closestDist = Number.MAX_VALUE;
                     var closestIndex = 0;
+
                     // which circle is the closest?
                     for (var i = 0; i < currentCount; i++) {
                         var newDist = s.dist(newX, newY, x[i], y[i]);
@@ -346,19 +291,29 @@ export default {
                     x[currentCount] = x[closestIndex] + s.cos(angle) * (r[closestIndex] + newR);
                     y[currentCount] = y[closestIndex] + s.sin(angle) * (r[closestIndex] + newR);
                     r[currentCount] = newR;
-                    currentCount++;
-                }
 
-                for(let i = 0; i < maxCount; i++) {
-                    let blob = new Blob( 
-                    x[i],
-                    y[i],
-                    r[i], 
-                    s.random(0.3,0.5),
-                    s.random(0,100));
+                    for(let k = 0; k < currentCount; k++) {
+                        let otherX = x[k];
+                        let otherY = y[k];
+                        let otherR = r[k];
 
-                    blobs.push(blob)
+                        let d = s.dist(x[currentCount], y[currentCount], otherX, otherY);
+
+                        if(d < r[currentCount] + otherR && currentCount >= 2) {
+                            x = x.filter(item => item !== otherX);
+                            y = y.filter(item => item !== otherY);
+                            r = r.filter(item => item !== otherR);
+                            console.log("Bubble destroyed")
+                            currentCount--;
+                        } else {
+                            currentCount++;
+                        }
+                    }
+                    
                 }
+                console.log(x);
+                console.log(y);
+                console.log(r);
                 
                 // while(blobs.length < 8) {
 
