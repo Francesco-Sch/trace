@@ -75,8 +75,14 @@ export default {
                for (var i = 0; i < maxCount; i++) {
                    s.push();
                    s.noFill();
-                    s.stroke(240, 0, 100);
-                    s.strokeWeight(2);
+                   s.strokeWeight(2);
+
+                   // Sets stroke color equivalent to day or night
+                   if(this.itIsNight == false) {
+                        s.stroke(240, 0, 100);
+                   } else {
+                        s.stroke(240, 100, 0);
+                   }
 
                     s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
                     s.pop();
@@ -117,7 +123,7 @@ export default {
                 console.log("CurrentTime: " + activityDate + " ; Sunrise: " + sunriseDate + " ; Sunset: " + sunsetDate);
                 
                 // Display if it is day or night
-                if(moment(activityDate).isSameOrBefore(sunsetDate) || moment(activityDate).isSameOrAfter(sunriseDate)) {
+                if(moment(activityDate).isSameOrBefore(sunsetDate) && moment(activityDate).isSameOrAfter(sunriseDate)) {
                     // Sets background to day
                     s.background(0,0,100); // white
 
