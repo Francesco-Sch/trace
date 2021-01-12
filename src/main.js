@@ -24,6 +24,9 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Custom styling */
+import './styles/loading.sass';
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)

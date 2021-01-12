@@ -40,7 +40,7 @@ export default {
     computed: {
         ...mapGetters(['isLoggedIn'])
     },
-    created() {
+    mounted() {
         this.requestAuthentication();
     }
 }
