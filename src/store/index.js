@@ -7,12 +7,14 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 // Fitness data objects
 const SET_RUNNING_DAYS = 'SET_RUNNING_DAYS';
 const SET_RUNNING_SESSIONS = 'SET_RUNNING_SESSIONS';
+const SET_WORKOUT_HEARTRATE = 'SET_WORKOUT_HEARTRATE'
 
 const store = createStore({
     state: () => ({
         isLoggedIn: false,
         runningDays: [],
-        runningSessions: []
+        runningSessions: [],
+        heartRate: Number,
     }),
     getters: {
         isLoggedIn: state => {
@@ -56,6 +58,16 @@ const store = createStore({
             
             console.log(filteredRunningSessions);
             state.runningSessions = filteredRunningSessions;
+        },
+        [SET_WORKOUT_HEARTRATE](state, heartrate, id) {
+            console.log(id);
+
+            let runningSession = state.runningSessions.find(runningSessions => runningSessions.id == id);
+
+            console.log(runningSession);
+            console.log(heartrate);
+
+            // runningSession.push(heartrate);
         }
     },
     actions: {
@@ -102,6 +114,19 @@ const store = createStore({
             }
 
             commit(SET_RUNNING_SESSIONS, sessionsOnRunningDays);
+        },
+        async fetchHeartrate({ commit }, { startDate, endDate, id }) {
+
+            const response = await Health.query({
+                startDate: startDate, // start of activity
+                endDate: endDate, // end of activtiy
+                dataType: 'heart_rate',
+                limit: 1000
+            });
+
+            console.log(response)
+
+            commit(SET_WORKOUT_HEARTRATE, { heartrate: response, id: id });
         }
     }
 })
