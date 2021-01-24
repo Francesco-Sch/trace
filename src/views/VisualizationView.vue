@@ -4,6 +4,10 @@
             <p5-wrapper 
             :startDate="this.currentWorkout.startDate"
             :endDate="this.currentWorkout.endDate"
+            :calories="this.currentWorkout.calories"
+            :distance="this.currentWorkout.distance"
+            :heartrate="this.currentWorkout.heartrate"
+            :steps="this.currentWorkout.steps"
             >
             </p5-wrapper>
         </template>

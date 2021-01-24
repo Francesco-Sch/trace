@@ -21,8 +21,6 @@ export default {
             apiKey: weatherApiKey,
             weather: {},
 
-            // moment().format('yyyy-MM-DDTHH:mm:ss')
-
             // Position
             latitude: 50.773,
             longitude: 8.748,
@@ -46,7 +44,11 @@ export default {
     },
     props: {
         startDate: Date,
-        endDate: Date
+        endDate: Date,
+        calories: Number,
+        distance: Number,
+        heartrate: Array,
+        steps: Array
     },
     methods: {
     },
@@ -81,17 +83,16 @@ export default {
                         s.stroke(240, 100, 0);
                    }
 
-                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
+                    s.ellipse(x[i], y[i], r[i] * 2 * (s.sin(s.frameCount / 12)), r[i] * 2 * (s.sin(s.frameCount / 12)));
                     s.pop();
                 }
             }
 
+
+            /* ------------- Weather-Visualization ----------------- */
             s.displayWeatherData = () => { 
                 // Get Start and End Date for request
                 // and formats it
-                let id = this.$route.params.id;
-                this.runningSession = this.$store.getters.runningSession(id);
-
                 let formattedStartDate = moment(this.startDate).format('yyyy-MM-DDTHH:mm:ss');
                 let formattedEndDate = moment(this.endDate).format('yyyy-MM-DDTHH:mm:ss');
                 
