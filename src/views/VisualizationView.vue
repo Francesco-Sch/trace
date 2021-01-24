@@ -23,7 +23,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['fetchHeartrate'])
+        ...mapActions(['fetchHeartrate', 'fetchSteps'])
     },
     computed: {
 
@@ -35,6 +35,11 @@ export default {
         let tempEndDate = Date.parse(this.currentWorkout.endDate);
 
         this.fetchHeartrate({
+            startDate: tempStartDate, 
+            endDate: tempEndDate,
+            id: this.workoutID
+        });
+        this.fetchSteps({
             startDate: tempStartDate, 
             endDate: tempEndDate,
             id: this.workoutID

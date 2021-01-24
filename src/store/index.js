@@ -7,7 +7,8 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 // Fitness data objects
 const SET_RUNNING_DAYS = 'SET_RUNNING_DAYS';
 const SET_RUNNING_SESSIONS = 'SET_RUNNING_SESSIONS';
-const SET_WORKOUT_HEARTRATE = 'SET_WORKOUT_HEARTRATE'
+const SET_WORKOUT_HEARTRATE = 'SET_WORKOUT_HEARTRATE';
+const SET_WORKOUT_STEPS = 'SET_WORKOUT_STEPS';
 
 const store = createStore({
     state: () => ({
@@ -59,15 +60,15 @@ const store = createStore({
             console.log(filteredRunningSessions);
             state.runningSessions = filteredRunningSessions;
         },
-        [SET_WORKOUT_HEARTRATE](state, heartrate, id) {
-            console.log(id);
+        [SET_WORKOUT_HEARTRATE](state, heartrateObject) {
+            let arrayIndex = state.runningSessions.findIndex(runningSessions => runningSessions.id == heartrateObject.id)
 
-            let runningSession = state.runningSessions.find(runningSessions => runningSessions.id == id);
+            state.runningSessions[arrayIndex]['heartrate'] = heartrateObject.heartrate;
+        },
+        [SET_WORKOUT_STEPS](state, stepsObject) {            
+            let arrayIndex = state.runningSessions.findIndex(runningSessions => runningSessions.id == stepsObject.id);
 
-            console.log(runningSession);
-            console.log(heartrate);
-
-            // runningSession.push(heartrate);
+            state.runningSessions[arrayIndex].steps = stepsObject.steps;
         }
     },
     actions: {
@@ -124,9 +125,18 @@ const store = createStore({
                 limit: 1000
             });
 
-            console.log(response)
-
             commit(SET_WORKOUT_HEARTRATE, { heartrate: response, id: id });
+        },
+        async fetchSteps({ commit }, { startDate, endDate, id }) {
+
+            const response = await Health.query({
+                startDate: startDate, // start of activity
+                endDate: endDate, // end of activtiy
+                dataType: 'steps',
+                limit: 1000
+            });
+
+            commit(SET_WORKOUT_STEPS, { steps: response, id: id });
         }
     }
 })

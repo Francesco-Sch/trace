@@ -50,12 +50,6 @@ export default {
     },
     mounted() {
         const p5Sketch = (s) => {
-            let maxCount = 5;
-
-            let x = new Array;
-            let y = new Array;
-            let r = new Array;
-
 
             s.setup = () => {
                 // Display config
@@ -107,6 +101,7 @@ export default {
                 .then(response => response.json())
                 .then(data => this.weather = data)
                 .then(() => {
+                        // Execute functions after fetching weather data
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
@@ -159,7 +154,6 @@ export default {
 
             // Function for drawing sun shape
             s.drawSun = (amount) => {
-
                 // Checks if it is night or day 
                 if(this.itIsNight == true) {
                     // Draws gradient from shape for night
@@ -268,6 +262,11 @@ export default {
             }
 
             /* ------------- Running-Visualization ----------------- */
+            let maxCount = 5;
+
+            let x = new Array;
+            let y = new Array;
+            let r = new Array;
 
             s.constructBlubbles = () => {
                 x[0] = s.displayWidth / 2;
@@ -321,9 +320,9 @@ export default {
 
                     currentCount++;
                     console.log("Current count: " + currentCount)
-
-                    
                 }
+
+                console.log(this.$store.state.runningSessions)
             }
 
         }
