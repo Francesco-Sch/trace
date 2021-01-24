@@ -1,7 +1,11 @@
 <template>
     <base-layout>
         <template v-slot:content>
-            <p5-wrapper></p5-wrapper>
+            <p5-wrapper 
+            :startDate="this.currentWorkout.startDate"
+            :endDate="this.currentWorkout.endDate"
+            >
+            </p5-wrapper>
         </template>
     </base-layout>
 </template>
@@ -9,7 +13,7 @@
 <script>
 import BaseLayout from '../layouts/BaseLayout.vue'
 import p5Wrapper from '../components/p5js/p5Wrapper.vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -26,24 +30,30 @@ export default {
         ...mapActions(['fetchHeartrate', 'fetchSteps'])
     },
     computed: {
-
+        ...mapGetters(['runningSession'])
     },
     async created() {
-        this.currentWorkout = await this.$store.getters.runningSession(this.workoutID);
+        this.currentWorkout = await this.runningSession(this.workoutID);
         
+        // Start and 
         let tempStartDate = Date.parse(this.currentWorkout.startDate);
         let tempEndDate = Date.parse(this.currentWorkout.endDate);
 
-        this.fetchHeartrate({
+        // Fetches heartrate of workout
+        await this.fetchHeartrate({
             startDate: tempStartDate, 
             endDate: tempEndDate,
             id: this.workoutID
         });
-        this.fetchSteps({
+        // Fetches steps of workout
+        await this.fetchSteps({
             startDate: tempStartDate, 
             endDate: tempEndDate,
             id: this.workoutID
         });
+
+        // Reloads data with heartrate and steps
+        this.currentWorkout = await this.runningSession(this.workoutID);
     }
 }
 </script>

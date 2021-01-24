@@ -18,8 +18,6 @@ export default {
             units: "us",
             json: 'json',
             astronomy: true,
-            startDate: Date,
-            endDate:  Date,
             apiKey: weatherApiKey,
             weather: {},
 
@@ -45,6 +43,10 @@ export default {
             // Running Session
             runningSession: {}
         }
+    },
+    props: {
+        startDate: Date,
+        endDate: Date
     },
     methods: {
     },
@@ -90,12 +92,12 @@ export default {
                 let id = this.$route.params.id;
                 this.runningSession = this.$store.getters.runningSession(id);
 
-                this.startDate = moment(this.runningSession.startDate).format('yyyy-MM-DDTHH:mm:ss');
-                this.endDate = moment(this.runningSession.endDate).format('yyyy-MM-DDTHH:mm:ss');
+                let formattedStartDate = moment(this.startDate).format('yyyy-MM-DDTHH:mm:ss');
+                let formattedEndDate = moment(this.endDate).format('yyyy-MM-DDTHH:mm:ss');
                 
                 let querys = "?locations=" + this.latitude + "," + this.longitude + "&aggregateHours=" + this.aggregateHours + 
                               "&unitGroup=" + this.units + "&shortColumnNames=" + false + "&contentType=" + this.json + 
-                              "&startDateTime=" + this.startDate + "&endDateTime=" + this.endDate + "&includeAstronomy=" + this.astronomy;
+                              "&startDateTime=" + formattedStartDate + "&endDateTime=" + formattedEndDate + "&includeAstronomy=" + this.astronomy;
                 
                 fetch(this.http + this.url + querys + "&key=" + this.apiKey)
                 .then(response => response.json())
