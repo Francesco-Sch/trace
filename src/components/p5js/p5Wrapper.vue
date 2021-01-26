@@ -43,6 +43,7 @@ export default {
             duration: Number,
             mappedCalories: Number,
             mappedDistance: Number,
+            mappedSteps: Number,
 
         }
     },
@@ -65,6 +66,8 @@ export default {
             let r = new Array;
             let maxCount = 4;
 
+            let ArrayOfSteps = this.steps;
+
             s.setup = () => {
                 // Display config
                 s.createCanvas(s.displayWidth, s.displayHeight);
@@ -76,7 +79,7 @@ export default {
 
                 // Background config
                 bgVis = s.createGraphics(s.displayWidth, s.displayHeight);
-                
+
                 bgVis.colorMode(s.HSB, 240, 100, 100, 100);
                 bgVis.noStroke();
                 bgVis.ellipseMode(s.CENTER);
@@ -334,16 +337,29 @@ export default {
                 }
             }
 
-            s.mapDatatoFrameCount = () => {
+             s.mapDatatoFrameCount = () => {
                 // Calories
                 this.mappedCalories = s.map(s.frameCount, 0, this.duration, 0, this.calories);
 
                 // Distance
                 this.mappedDistance = s.map(s.frameCount, 0, this.duration, 0, this.distance);
+
+                // Steps
+                let countedSteps = 0;
+
+                console.log(ArrayOfSteps);
+
+                for(let i = 0; i < this.steps.length; i++) {
+                    countedSteps = countedSteps + this.steps[i].value
+                }
+
+                this.mappedSteps = countedSteps
+                console.log(this.mappedSteps)
             }
 
             s.visualization = () => {
                 r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 500);
+                r[2] = s.map(this.mappedDistance, 0, this.distance, 100, 500);
 
                 s.image(bgVis, 0, 0);
                 

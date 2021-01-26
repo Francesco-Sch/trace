@@ -2,6 +2,7 @@
     <base-layout>
         <template v-slot:content>
             <p5-wrapper 
+            v-show="this.currentWorkout.steps"
             :startDate="this.currentWorkout.startDate"
             :endDate="this.currentWorkout.endDate"
             :calories="this.currentWorkout.calories"
@@ -28,6 +29,7 @@ export default {
         return {
             workoutID: this.$route.params.id,
             currentWorkout: null,
+            hasData: false
         }
     },
     methods: {
@@ -58,6 +60,8 @@ export default {
 
         // Reloads data with heartrate and steps
         this.currentWorkout = await this.runningSession(this.workoutID);
+        this.hasData = true;
+
     }
 }
 </script>
