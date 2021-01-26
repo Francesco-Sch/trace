@@ -41,6 +41,8 @@ export default {
             // Running Session
             runningSession: {},
             duration: Number,
+            mappedCalories: Number,
+            mappedDistance: Number,
 
         }
     },
@@ -56,40 +58,36 @@ export default {
     },
     mounted() {
         const p5Sketch = (s) => {
+            let bgVis;
+
+            let x = new Array;
+            let y = new Array;
+            let r = new Array;
+            let maxCount = 4;
 
             s.setup = () => {
                 // Display config
                 s.createCanvas(s.displayWidth, s.displayHeight);
-                s.frameRate(25);
+                s.frameRate(30);
 
-                // Color config
                 s.colorMode(s.HSB, 240, 100, 100, 100);
                 s.noStroke();
                 s.ellipseMode(s.CENTER);
+
+                // Background config
+                bgVis = s.createGraphics(s.displayWidth, s.displayHeight);
+                
+                bgVis.colorMode(s.HSB, 240, 100, 100, 100);
+                bgVis.noStroke();
+                bgVis.ellipseMode(s.CENTER);
 
                 // Display weather
                 s.displayWeatherData();
             }
 
             s.draw = () => {
-                let maxValue = s.frameCount
-                r[1] = s.map(maxValue, 0, 200, 0, s.displayWidth)
-
-               for (var i = 0; i < maxCount; i++) {
-                   s.push();
-                   s.noFill();
-                   s.strokeWeight(2);
-
-                   // Sets stroke color equivalent to day or night
-                   if(this.itIsNight == false) {
-                        s.stroke(240, 0, 100);
-                   } else {
-                        s.stroke(240, 100, 0);
-                   }
-
-                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
-                    s.pop();
-                }
+                s.mapDatatoFrameCount();
+                s.visualization();
             }
 
 
@@ -112,7 +110,7 @@ export default {
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
-                        s.calculateDuration(4);
+                        s.calculateDuration(64);
                         s.constructBlubbles();
                     }
                 )
@@ -168,16 +166,16 @@ export default {
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                     
-                        s.fill(this.temperatureHue, 100, c);
-                        s.ellipse(s.displayWidth/2, s.displayHeight/2, i, i*1.5);
+                        bgVis.fill(this.temperatureHue, 100, c);
+                        bgVis.ellipse(bgVis.displayWidth/2, bgVis.displayHeight/2, i, i*1.5);
                     }
                 } else {
                     // Draws gradient from shape for day
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                     
-                        s.fill(this.temperatureHue, c, 100);
-                        s.ellipse(s.displayWidth/2, s.displayHeight/2, i, i*1.5);
+                        bgVis.fill(this.temperatureHue, c, 100);
+                        bgVis.ellipse(bgVis.displayWidth/2, bgVis.displayHeight/2, i, i*1.5);
                     }
                 }
             }
@@ -190,16 +188,16 @@ export default {
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                         
-                        s.fill(this.temperatureHue, 100, c);
-                        s.ellipse(xPos, yPos, i, i*1.5);
+                        bgVis.fill(this.temperatureHue, 100, c);
+                        bgVis.ellipse(xPos, yPos, i, i*1.5);
                     }
                 } else {
                     // Draws gradient from shape for day
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                         
-                        s.fill(this.temperatureHue, c, 100);
-                        s.ellipse(xPos, yPos, i, i*1.5);
+                        bgVis.fill(this.temperatureHue, c, 100);
+                        bgVis.ellipse(xPos, yPos, i, i*1.5);
                     }
                 }
             }
@@ -211,10 +209,10 @@ export default {
                 let yPos = new Array(amount);
                 
                 for(let i=0; i<amount; i++) {
-                    xPos[i] = s.random(s.displayWidth);
-                    yPos[i] = s.random(s.displayHeight);
+                    xPos[i] = s.random(bgVis.displayWidth);
+                    yPos[i] = s.random(bgVis.displayHeight);
                     
-                    s.drawRainShape(xPos[i], yPos[i], 125);
+                    bgVis.drawRainShape(xPos[i], yPos[i], 125);
                 }
             }
 
@@ -227,16 +225,16 @@ export default {
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                         
-                        s.fill(this.temperatureHue, 100, c);
-                        s.ellipse(xPos, yPos, i*3, i);
+                        bgVis.fill(this.temperatureHue, 100, c);
+                        bgVis.ellipse(xPos, yPos, i*3, i);
                     }
                 } else {
                     // Draws gradient from shape for day
                     for(let i=amount; i>0; i-=2) {
                         let c = s.map(i,amount,0,0,100);
                         
-                        s.fill(this.temperatureHue, c, 100);
-                        s.ellipse(xPos, yPos, i*3, i);
+                        bgVis.fill(this.temperatureHue, c, 100);
+                        bgVis.ellipse(xPos, yPos, i*3, i);
                     }
                 }
             }
@@ -244,8 +242,8 @@ export default {
             // Function for drawing two cloud shapes
             s.drawClouds = () => {
                 // Position of cloud shapes
-                let xPos = [0, s.displayWidth];
-                let yPos = [((s.displayHeight/4)), ((s.displayHeight/4)*3)];
+                let xPos = [0, bgVis.displayWidth];
+                let yPos = [((bgVis.displayHeight/4)), ((bgVis.displayHeight/4)*3)];
                 
                 for(let i=0; i<2; i++) {
                     s.drawCloudShape(xPos[i], yPos[i], 375);
@@ -270,14 +268,7 @@ export default {
             }
 
             /* ------------- Running-Visualization ----------------- */
-            let maxCount = 4;
-
-            let x = new Array;
-            let y = new Array;
-            let r = new Array;
-
             s.calculateDuration = (multiplier) => {
-                console.log(this.startDate);
                 let formattedStartDate = moment(this.startDate);
                 let formattedEndDate = moment(this.endDate);
 
@@ -341,10 +332,37 @@ export default {
                     currentCount++;
                     console.log("Current count: " + currentCount)
                 }
-
-                console.log(this.$store.state.runningSessions)
             }
 
+            s.mapDatatoFrameCount = () => {
+                // Calories
+                this.mappedCalories = s.map(s.frameCount, 0, this.duration, 0, this.calories);
+
+                // Distance
+                this.mappedDistance = s.map(s.frameCount, 0, this.duration, 0, this.distance);
+            }
+
+            s.visualization = () => {
+                r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 500);
+
+                s.image(bgVis, 0, 0);
+                
+                for (var i = 0; i < maxCount; i++) {
+                   s.push();
+                   s.noFill();
+                   s.strokeWeight(2);
+
+                   // Sets stroke color equivalent to day or night
+                   if(this.itIsNight == false) {
+                        s.stroke(240, 0, 100);
+                   } else {
+                        s.stroke(240, 100, 0);
+                   }
+
+                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
+                    s.pop();
+                }
+            }
         }
         // Load sketch into div
         new P5(p5Sketch, 'p5canvas');

@@ -65,6 +65,8 @@ export default {
         await this.fetchRunningDays();
         await this.fetchRunningActivites();
 
+        console.log(this.runningSessions)
+
         // Destroys loading screen after data was loaded
         this.destroyLoading()
     },
