@@ -39,7 +39,9 @@ export default {
             currentWeatherCondition: String,
 
             // Running Session
-            runningSession: {}
+            runningSession: {},
+            duration: Number,
+
         }
     },
     props: {
@@ -70,6 +72,8 @@ export default {
             }
 
             s.draw = () => {
+                let maxValue = s.frameCount
+                r[1] = s.map(maxValue, 0, 200, 0, s.displayWidth)
 
                for (var i = 0; i < maxCount; i++) {
                    s.push();
@@ -83,7 +87,7 @@ export default {
                         s.stroke(240, 100, 0);
                    }
 
-                    s.ellipse(x[i], y[i], r[i] * 2 * (s.sin(s.frameCount / 12)), r[i] * 2 * (s.sin(s.frameCount / 12)));
+                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
                     s.pop();
                 }
             }
@@ -108,6 +112,7 @@ export default {
                         s.displayDayOrNight(this.itIsNight);
                         s.weatherColor();
                         s.drawWeatherShape();
+                        s.calculateDuration(4);
                         s.constructBlubbles();
                     }
                 )
@@ -265,11 +270,23 @@ export default {
             }
 
             /* ------------- Running-Visualization ----------------- */
-            let maxCount = 5;
+            let maxCount = 4;
 
             let x = new Array;
             let y = new Array;
             let r = new Array;
+
+            s.calculateDuration = (multiplier) => {
+                console.log(this.startDate);
+                let formattedStartDate = moment(this.startDate);
+                let formattedEndDate = moment(this.endDate);
+
+                // Calculates max FrameCount
+                let maxFrameCount = (formattedStartDate.diff(formattedEndDate, 'seconds') * -1) * 30
+
+                // Sets duration depending on multipier (how fast the visualization should play)
+                this.duration = maxFrameCount / multiplier;
+            }
 
             s.constructBlubbles = () => {
                 x[0] = s.displayWidth / 2;
