@@ -136,7 +136,13 @@ const store = createStore({
                 limit: 1000
             });
 
-            commit(SET_WORKOUT_STEPS, { steps: response, id: id });
+            let countedSteps= 0;
+
+            for(let i = 0; i < response.length; i++) {
+                countedSteps += response[i].value
+            }
+            
+            commit(SET_WORKOUT_STEPS, { steps: countedSteps, id: id });
         }
     }
 })

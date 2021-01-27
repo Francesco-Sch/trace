@@ -29,7 +29,8 @@ export default {
         return {
             workoutID: this.$route.params.id,
             currentWorkout: null,
-            hasData: false
+            steps: Number,
+            countedSteps: Array
         }
     },
     methods: {
@@ -60,8 +61,6 @@ export default {
 
         // Reloads data with heartrate and steps
         this.currentWorkout = await this.runningSession(this.workoutID);
-        this.hasData = true;
-
     }
 }
 </script>
