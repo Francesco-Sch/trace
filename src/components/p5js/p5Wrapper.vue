@@ -4,7 +4,7 @@
 
 <script>
 import P5 from 'p5';
-import moment from 'moment';
+import moment, { max } from 'moment';
 
 import { weatherApiKey } from '../../p5scripts/credentials.js'
 
@@ -346,11 +346,23 @@ export default {
                 this.mappedSteps = s.map(s.frameCount, 0, this.duration, 0, this.steps);
             }
 
+            s.checkIntersection = (x1, y1, r1, x2, y2, r2) => {
+                let distance = s.dist(x1, y1, x2, y2);
+
+                if(distance < r1 + r2) {
+                    return true;
+                } else {
+                    return false
+                }
+            }
+
             s.visualization = () => {
+                // Grow circles
                 r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 500);
                 r[2] = s.map(this.mappedDistance, 0, this.distance, 100, 500);
                 r[3] = s.map(this.mappedSteps, 0, this.steps, 100, 500);
-
+                
+                // Redraws background visualization to delete old frame
                 s.image(bgVis, 0, 0);
                 
                 for (var i = 0; i < maxCount; i++) {
@@ -367,6 +379,12 @@ export default {
 
                     s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
                     s.pop();
+
+                    for(let j = 0; i < maxCount; j++) {
+                        if(s.checkIntersection(x[i] !== x[j] && x[i], y[i], r[i], x[j], y[j], r[j])) {
+                            x[i] -= 25;
+                        }
+                    }
                 }
             }
         }
