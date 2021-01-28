@@ -88,9 +88,9 @@ export default {
                 // Create bubbles
                 for (let i = 0; i < numBubbles; i++) {
                     bubbles[i] = new Bubble(
-                    s.random(s.displayWidth),
-                    s.random(s.displayHeight),
-                    s.random(100, 150),
+                    s.random((s.displayWidth / 4), ((s.displayWidth / 4) * 3)),
+                    s.random((s.displayHeight / 4), ((s.displayHeight / 4) * 3)),
+                    s.random(75, 100),
                     i,
                     bubbles
                     );
@@ -98,10 +98,8 @@ export default {
 
                 // Set hearRateBubble
                 bubbles[0].x = s.displayWidth / 2;
-                bubbles[0].y = s.displayHeight / 2;
-                bubbles[0].diameter = 300;
-
-
+                bubbles[0].y = (s.displayHeight / 2) - 25;
+                bubbles[0].diameter = 200;
             }
 
             s.draw = () => {
