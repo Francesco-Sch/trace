@@ -109,7 +109,11 @@ export default {
                 bubbles.forEach(bubble => {
                     bubble.collide();
                     bubble.move();
-                    bubble.display();
+                    bubble.display(
+                        this.itIsNight, 
+                        this.currentWeatherCondition,
+                        this.temperatureHue
+                        );
                 });
             }
 
@@ -234,7 +238,9 @@ export default {
                     xPos[i] = s.random(bgVis.displayWidth);
                     yPos[i] = s.random(bgVis.displayHeight);
                     
-                    bgVis.drawRainShape(xPos[i], yPos[i], 125);
+                    s.drawRainShape(xPos[i], yPos[i], 125);
+
+                    console.log("Test Rain")
                 }
             }
 
@@ -275,6 +281,8 @@ export default {
             s.drawWeatherShape = () => {
                 this.currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
                 console.log(this.currentWeatherCondition);
+
+                this.currentWeatherCondition = "Rain";
 
                 // Checks present weather condition
                 if(this.currentWeatherCondition == "Clouds") {
@@ -354,7 +362,19 @@ export default {
                     this.vx *= friction;
                 }
 
-                display() {
+                display(itIsNight, currentWeatherCondition, temperatureHue) {
+                    s.noFill();
+                    s.strokeWeight(2);
+
+                    // Sets stroke color equivalent to rain or day or night 
+                    if(currentWeatherCondition == "Rain") {
+                        s.stroke(temperatureHue, 100, 100);
+                    } else if(itIsNight == false) {
+                        s.stroke(240, 0, 100);
+                    } else {
+                        s.stroke(240, 100, 0);
+                    }
+
                     s.ellipse(this.x, this.y, this.diameter, this.diameter);
                 }
             }
