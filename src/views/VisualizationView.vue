@@ -1,5 +1,5 @@
 <template>
-    <base-layout>
+    <base-layout :navigationTitle="'Run'">
         <template v-slot:content>
             <p5-wrapper 
             v-show="this.currentWorkout.steps"

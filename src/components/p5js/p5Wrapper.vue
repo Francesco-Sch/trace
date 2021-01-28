@@ -66,6 +66,8 @@ export default {
             let friction = -0.05;
             let bubbles = [];
 
+            let grow = true;
+
             s.setup = () => {
                 // Display config
                 s.createCanvas(s.displayWidth, s.displayHeight);
@@ -99,7 +101,7 @@ export default {
                 // Set hearRateBubble
                 bubbles[0].x = s.displayWidth / 2;
                 bubbles[0].y = (s.displayHeight / 2) - 25;
-                bubbles[0].diameter = 200;
+                bubbles[0].diameter = 50;
             }
 
             s.draw = () => {
@@ -111,6 +113,21 @@ export default {
                 s.image(bgVis, 0, 0);
 
                 // PulsatingHeartrateBubble
+                if(grow == true) {
+                    bubbles[0].diameter += ((1/6) * (120/2))
+
+                    console.log(bubbles[0].diameter)
+
+                    if(bubbles[0].diameter == 350) {
+                        grow = false;
+                    }
+                } else {
+                    bubbles[0].diameter -= ((1/6) * (120/2))
+
+                    if(bubbles[0].diameter == 50) {
+                        grow = true;
+                    }
+                }
 
 
                 // Grow bubbles
