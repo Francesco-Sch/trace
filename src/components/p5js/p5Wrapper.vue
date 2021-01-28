@@ -61,10 +61,10 @@ export default {
         const p5Sketch = (s) => {
             let bgVis;
 
-            let x = new Array;
-            let y = new Array;
-            let r = new Array;
-            let maxCount = 4;
+            let numBubbles = 4;
+            let spring = 1;
+            let friction = -0.05;
+            let bubbles = [];
 
             s.setup = () => {
                 // Display config
@@ -84,11 +84,33 @@ export default {
 
                 // Display weather
                 s.displayWeatherData();
+
+                // Create bubbles
+                for (let i = 0; i < numBubbles; i++) {
+                    bubbles[i] = new Bubble(
+                    s.random(s.displayWidth),
+                    s.random(s.displayHeight),
+                    s.random(150, 250),
+                    i,
+                    bubbles
+                    );
+                }
             }
 
             s.draw = () => {
+                // Maps the data from the fitness api
+                // to the frameCount
                 s.mapDatatoFrameCount();
-                s.visualization();
+
+                // Redraws background to delete old frame
+                s.image(bgVis, 0, 0);
+                
+                // Draws bubbles each representing another data-set
+                bubbles.forEach(bubble => {
+                    bubble.collide();
+                    bubble.move();
+                    bubble.display();
+                });
             }
 
 
@@ -112,7 +134,6 @@ export default {
                         s.weatherColor();
                         s.drawWeatherShape();
                         s.calculateDuration(64);
-                        s.constructBlubbles();
                     }
                 )
             }
@@ -280,61 +301,6 @@ export default {
                 this.duration = maxFrameCount / multiplier;
             }
 
-            s.constructBlubbles = () => {
-                x[0] = s.displayWidth / 2;
-                y[0] = s.displayHeight / 2;
-                r[0] = 100;
-                let currentCount = 1;
-
-                while(currentCount < maxCount) {
-                    // create a random set of parameters
-                    var newR = s.random(50, 125);
-                    var newX = s.random(newR, s.displayWidth - newR);
-                    var newY = s.random(newR, s.displayHeight - newR);
-
-                    var closestDist = Number.MAX_VALUE;
-                    var closestIndex = 0;
-
-                    console.log(x.length);
-                    console.log(currentCount);
-
-                    // which circle is the closest?
-                    for (var i = 0; i < currentCount; i++) {
-                        var newDist = s.dist(newX, newY, x[i], y[i]);
-                        if (newDist < closestDist) {
-                            closestDist = newDist;
-                            closestIndex = i;
-                        }
-                    }
-
-                    // aline it to the closest circle outline
-                    var angle = s.atan2(newY - y[closestIndex], newX - x[closestIndex]);
-
-                    x[currentCount] = x[closestIndex] + s.cos(angle) * (r[closestIndex] + newR);
-                    y[currentCount] = y[closestIndex] + s.sin(angle) * (r[closestIndex] + newR);
-                    r[currentCount] = newR;
-
-                    for(let k = 0; k < currentCount; k++) {
-                        let otherX = x[k];
-                        let otherY = y[k];
-                        let otherR = r[k];
-
-                        let d = s.dist(x[currentCount], y[currentCount], otherX, otherY);
-
-                        if(d < r[currentCount] + otherR) {
-                            x = x.filter(item => item !== otherX);
-                            y = y.filter(item => item !== otherY);
-                            r = r.filter(item => item !== otherR);
-                            currentCount = currentCount - 1;
-                            console.log("Bubble destroyed")
-                        }
-                    }
-
-                    currentCount++;
-                    console.log("Current count: " + currentCount)
-                }
-            }
-
              s.mapDatatoFrameCount = () => {
                 // Calories
                 this.mappedCalories = s.map(s.frameCount, 0, this.duration, 0, this.calories);
@@ -346,48 +312,50 @@ export default {
                 this.mappedSteps = s.map(s.frameCount, 0, this.duration, 0, this.steps);
             }
 
-            s.checkIntersection = (x1, y1, r1, x2, y2, r2) => {
-                let distance = s.dist(x1, y1, x2, y2);
-
-                if(distance < r1 + r2) {
-                    return true;
-                } else {
-                    return false
+            // Bubble-Object --- Code from https://p5js.org/examples/motion-bouncy-bubbles.html
+            // based on code from Keith Peters
+            class Bubble {
+                constructor(xin, yin, din, idin, oin) {
+                    this.x = xin;
+                    this.y = yin;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.diameter = din;
+                    this.id = idin;
+                    this.others = oin;
                 }
-            }
 
-            s.visualization = () => {
-                // Grow circles
-                r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 300);
-                r[2] = s.map(this.mappedDistance, 0, this.distance, 100, 300);
-                r[3] = s.map(this.mappedSteps, 0, this.steps, 100, 300);
-                
-                // Redraws background visualization to delete old frame
-                s.image(bgVis, 0, 0);
-                
-                for (var i = 0; i < maxCount; i++) {
-                   s.push();
-                   s.noFill();
-                   s.strokeWeight(2);
+                collide() {
+                    for (let i = this.id + 1; i < numBubbles; i++) {
+                        let dx = this.others[i].x - this.x;
+                        let dy = this.others[i].y - this.y;
+                        let distance = s.sqrt(dx * dx + dy * dy);
+                        let minDist = this.others[i].diameter / 2 + this.diameter / 2;
 
-                   // Sets stroke color equivalent to day or night
-                   if(this.itIsNight == false) {
-                        s.stroke(240, 0, 100);
-                   } else {
-                        s.stroke(240, 100, 0);
-                   }
-
-                    s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
-                    s.pop();
-                    
-                    // Check if they are intersecting
-                    // and move them if they intersect
-                    for(let q = 0; q < maxCount; q++) {
-                        if(s.checkIntersection(x[i] !== x[q] && x[i], y[i], r[i], x[q], y[q], r[q])) {
-                            // x[i] = s.random(s.displayWidth);
-                            // y[i] = s.random(s.displayHeight);
+                        if (distance < minDist) {
+                            let angle = s.atan2(dy, dx);
+                            let targetX = this.x + s.cos(angle) * minDist;
+                            let targetY = this.y + s.sin(angle) * minDist;
+                            let ax = (targetX - this.others[i].x) * spring;
+                            let ay = (targetY - this.others[i].y) * spring;
+                            this.vx -= ax;
+                            this.vy -= ay;
+                            this.others[i].vx += ax;
+                            this.others[i].vy += ay;
                         }
                     }
+                }
+
+                move() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    this.vy *= friction;
+                    this.vx *= friction;
+                }
+
+                display() {
+                    s.ellipse(this.x, this.y, this.diameter, this.diameter);
                 }
             }
         }
