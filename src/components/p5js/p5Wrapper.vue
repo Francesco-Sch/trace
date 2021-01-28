@@ -44,7 +44,6 @@ export default {
             mappedCalories: Number,
             mappedDistance: Number,
             mappedSteps: Number,
-
         }
     },
     props: {
@@ -128,9 +127,9 @@ export default {
                 }
 
                 // Grow bubbles
-                bubbles[1].diameter = s.map(this.mappedCalories, 0, this.duration, 100, 500);
-                bubbles[2].diameter = s.map(this.mappedDistance, 0, this.duration, 100, 500);
-                bubbles[3].diameter = s.map(this.mappedSteps, 0, this.duration, 100, 500);
+                bubbles[1].diameter = s.map(this.mappedCalories, 0, this.duration, 100, 350);
+                bubbles[2].diameter = s.map(this.mappedDistance, 0, this.duration, 100, 350);
+                bubbles[3].diameter = s.map(this.mappedSteps, 0, this.duration, 100, 350);
                 
                 // Draws bubbles each representing another data-set
                 bubbles.forEach(bubble => {
@@ -142,6 +141,11 @@ export default {
                         this.temperatureHue
                         );
                 });
+
+                // Stop animation when run ends
+                if(s.frameCount >= this.duration) {
+                    s.noLoop();
+                }
             }
 
 
