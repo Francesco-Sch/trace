@@ -4,7 +4,7 @@
 
 <script>
 import P5 from 'p5';
-import moment, { max } from 'moment';
+import moment from 'moment';
 
 import { weatherApiKey } from '../../p5scripts/credentials.js'
 
@@ -358,9 +358,9 @@ export default {
 
             s.visualization = () => {
                 // Grow circles
-                r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 500);
-                r[2] = s.map(this.mappedDistance, 0, this.distance, 100, 500);
-                r[3] = s.map(this.mappedSteps, 0, this.steps, 100, 500);
+                r[1] = s.map(this.mappedCalories, 0, this.calories, 100, 300);
+                r[2] = s.map(this.mappedDistance, 0, this.distance, 100, 300);
+                r[3] = s.map(this.mappedSteps, 0, this.steps, 100, 300);
                 
                 // Redraws background visualization to delete old frame
                 s.image(bgVis, 0, 0);
@@ -379,10 +379,13 @@ export default {
 
                     s.ellipse(x[i], y[i], r[i] * 2, r[i] * 2);
                     s.pop();
-
-                    for(let j = 0; i < maxCount; j++) {
-                        if(s.checkIntersection(x[i] !== x[j] && x[i], y[i], r[i], x[j], y[j], r[j])) {
-                            x[i] -= 25;
+                    
+                    // Check if they are intersecting
+                    // and move them if they intersect
+                    for(let q = 0; q < maxCount; q++) {
+                        if(s.checkIntersection(x[i] !== x[q] && x[i], y[i], r[i], x[q], y[q], r[q])) {
+                            // x[i] = s.random(s.displayWidth);
+                            // y[i] = s.random(s.displayHeight);
                         }
                     }
                 }
