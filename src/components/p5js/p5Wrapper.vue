@@ -114,21 +114,18 @@ export default {
 
                 // PulsatingHeartrateBubble
                 if(grow == true) {
-                    bubbles[0].diameter += ((1/6) * (120/2))
+                    bubbles[0].diameter += ((1/6) * (this.heartrate/2))
 
-                    console.log(bubbles[0].diameter)
-
-                    if(bubbles[0].diameter == 350) {
+                    if(bubbles[0].diameter >= 350) {
                         grow = false;
                     }
                 } else {
-                    bubbles[0].diameter -= ((1/6) * (120/2))
+                    bubbles[0].diameter -= ((1/6) * (this.heartrate/2))
 
-                    if(bubbles[0].diameter == 50) {
+                    if(bubbles[0].diameter <= 50) {
                         grow = true;
                     }
                 }
-
 
                 // Grow bubbles
                 bubbles[1].diameter = s.map(this.mappedCalories, 0, this.duration, 100, 500);

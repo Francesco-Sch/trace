@@ -125,7 +125,15 @@ const store = createStore({
                 limit: 1000
             });
 
-            commit(SET_WORKOUT_HEARTRATE, { heartrate: response, id: id });
+            let countedHeartrate= 0;
+
+            for(let i = 0; i < response.length; i++) {
+                countedHeartrate += response[i].value
+            }
+
+            let averageHeartrate =  (countedHeartrate/response.length)
+
+            commit(SET_WORKOUT_HEARTRATE, { heartrate: averageHeartrate, id: id });
         },
         async fetchSteps({ commit }, { startDate, endDate, id }) {
 
