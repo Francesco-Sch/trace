@@ -109,6 +109,14 @@ export default {
 
                 // Redraws background to delete old frame
                 s.image(bgVis, 0, 0);
+
+                // PulsatingHeartrateBubble
+
+
+                // Grow bubbles
+                bubbles[1].diameter = s.map(this.mappedCalories, 0, this.duration, 100, 500);
+                bubbles[2].diameter = s.map(this.mappedDistance, 0, this.duration, 100, 500);
+                bubbles[3].diameter = s.map(this.mappedSteps, 0, this.duration, 100, 500);
                 
                 // Draws bubbles each representing another data-set
                 bubbles.forEach(bubble => {
