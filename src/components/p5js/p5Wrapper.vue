@@ -90,11 +90,18 @@ export default {
                     bubbles[i] = new Bubble(
                     s.random(s.displayWidth),
                     s.random(s.displayHeight),
-                    s.random(150, 250),
+                    s.random(100, 150),
                     i,
                     bubbles
                     );
                 }
+
+                // Set hearRateBubble
+                bubbles[0].x = s.displayWidth / 2;
+                bubbles[0].y = s.displayHeight / 2;
+                bubbles[0].diameter = 300;
+
+
             }
 
             s.draw = () => {
@@ -281,8 +288,6 @@ export default {
             s.drawWeatherShape = () => {
                 this.currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
                 console.log(this.currentWeatherCondition);
-
-                this.currentWeatherCondition = "Rain";
 
                 // Checks present weather condition
                 if(this.currentWeatherCondition == "Clouds") {
