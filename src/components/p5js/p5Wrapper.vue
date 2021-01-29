@@ -264,20 +264,24 @@ export default {
             s.drawRain = (amount) => {
                 let xPos = new Array(amount);
                 let yPos = new Array(amount);
+
+                if(this.itIsNight == true) {
+                    bgVis.background(0,0,0); // black
+                } else {
+                    bgVis.background(0,0,100); // white
+                }
                 
                 for(let i=0; i<amount; i++) {
                     xPos[i] = s.random(bgVis.displayWidth);
                     yPos[i] = s.random(bgVis.displayHeight);
                     
                     s.drawRainShape(xPos[i], yPos[i], 125);
-
-                    console.log("Test Rain")
                 }
             }
 
             // Function for drawing cloudy shapes
-            s.drawCloudShape = (xPos, yPos, amount) => {
-                
+            s.drawCloudShape = (xPos, yPos, amount) => {     
+
                 // Checks if it is night or day 
                 if(this.itIsNight == true) {
                     // Draws gradient from shape for night
@@ -303,6 +307,12 @@ export default {
                 // Position of cloud shapes
                 let xPos = [0, bgVis.displayWidth];
                 let yPos = [((bgVis.displayHeight/4)), ((bgVis.displayHeight/4)*3)];
+
+                if(this.itIsNight == true) {
+                    bgVis.background(0,0,0); // black
+                } else {
+                    bgVis.background(0,0,100); // white
+                }
                 
                 for(let i=0; i<2; i++) {
                     s.drawCloudShape(xPos[i], yPos[i], 375);
@@ -312,6 +322,8 @@ export default {
             s.drawWeatherShape = () => {
                 this.currentWeatherCondition = this.weather.locations['50.773,8.748'].values[0].conditions;
                 console.log(this.currentWeatherCondition);
+
+                this.itIsNight = false;
 
                 // Checks present weather condition
                 if(this.currentWeatherCondition == "Clouds") {

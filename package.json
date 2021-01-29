@@ -40,5 +40,5 @@
     "sass-loader": "^10.1.0",
     "vue-jest": "^5.0.0-0"
   },
-  "description": "An Ionic project"
+  "description": "Trace - A progressive running app"
 }
